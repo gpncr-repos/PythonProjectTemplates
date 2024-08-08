@@ -1,11 +1,12 @@
+from functools import cached_property
+
+from sqlalchemy import Engine
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
 from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
-from interfaces import ISqlAlchemy
 
 from config import DBSettings
-from functools import cached_property
-from sqlalchemy import Engine
+from interfaces import ISqlAlchemy
 
 
 class SqlAlchemySync(ISqlAlchemy):
@@ -25,7 +26,14 @@ class SqlAlchemySync(ISqlAlchemy):
             db.close()
 
     def __build_engine(self) -> Engine:
-        return create_engine(self.pg_settings.pg_sync_dsn)
+        return create_engine(str(self.pg_settings.pg_sync_dsn))
+
+    def __call__(self):
+        db = self.Session()
+        try:
+            yield db
+        finally:
+            db.close()
 
 
 class SqlAlchemyAsync(ISqlAlchemy):
@@ -49,7 +57,14 @@ class SqlAlchemyAsync(ISqlAlchemy):
             await db.close()
 
     def __build_engine(self) -> AsyncEngine:
-        return create_async_engine(self.pg_settings.pg_async_dsn)
+        return create_async_engine(str(self.pg_settings.pg_async_dsn))
+
+    async def __call__(self):
+        db = self.Session()
+        try:
+            yield db
+        finally:
+            await db.close()
 
 
 Base = declarative_base()

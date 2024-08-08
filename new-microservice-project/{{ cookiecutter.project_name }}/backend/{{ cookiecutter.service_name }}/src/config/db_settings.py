@@ -1,11 +1,15 @@
 from typing import Optional
 
 from pydantic_core.core_schema import ValidationInfo
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, field_validator
 
 
 class DBSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=('.env', )
+    )
+
     user: str = ''
     password: str = ''
     host: str = ''
@@ -38,9 +42,3 @@ class DBSettings(BaseSettings):
             port=values.data.get("port"),
             path=values.data.get("db_name")
         )
-
-
-
-if __name__ == '__main__':
-    db_settings = DBSettings(user='test', password='test', host='localhost', port='5432', db_name='test')
-    print(db_settings)
