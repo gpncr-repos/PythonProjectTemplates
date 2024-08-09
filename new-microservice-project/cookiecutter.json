@@ -1,4 +1,5 @@
 {
   "project_name": "test",
-  "service_name": "test_service"
+  "service_name": "test_service",
+  "do_you_need_postgres": false
 }
