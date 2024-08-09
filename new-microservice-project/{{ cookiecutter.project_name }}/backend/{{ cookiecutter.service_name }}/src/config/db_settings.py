@@ -1,20 +1,17 @@
 from typing import Optional
 
 from pydantic_core.core_schema import ValidationInfo
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import PostgresDsn, field_validator
+from pydantic import PostgresDsn, field_validator, RedisDsn, Field
+
+from .base import SettingsMixin
 
 
-class DBSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=('.env', )
-    )
-
-    user: str = ''
-    password: str = ''
-    host: str = ''
-    port: int = 5432
-    db_name: str = ''
+class DBSettings(SettingsMixin):
+    user: str = Field(alias="PG_USER")
+    password: str = Field(alias="PG_PASSWORD")
+    host: str = Field(alias="PG_HOST")
+    port: int = Field(alias="PG_PORT", default=5432)
+    db_name: str = Field(alias="PG_DB_NAME")
 
     pg_sync_dsn: Optional[PostgresDsn | str] = None
     pg_async_dsn: Optional[PostgresDsn | str] = None
@@ -41,4 +38,26 @@ class DBSettings(BaseSettings):
             host=values.data.get("host"),
             port=values.data.get("port"),
             path=values.data.get("db_name")
+        )
+
+
+class RedisSettings(SettingsMixin):
+    user: str = Field(alias="REDIS_USER")
+    password: str = Field(alias="REDIS_PASSWORD")
+    host: str = Field(alias="REDIS_HOST")
+    port: int = Field(alias="REDIS_PORT", default=6379)
+    db_id: str = Field(alias="REDIS_DB")
+
+    dns: Optional[RedisDsn | str] = None
+
+    @field_validator("redis_dns")  # noqa
+    @classmethod
+    def create_connection(cls, v: str, values: ValidationInfo) -> RedisDsn:
+        return RedisDsn.build(
+            scheme="redis",
+            username=values.data.get("user"),
+            host=values.data.get("host"),
+            port=values.data.get("port"),
+            password=values.data.get("password"),
+            path=values.data.get('db_id')
         )
