@@ -1,12 +1,15 @@
 from typing import Optional
 
+import dotenv
 from pydantic_core.core_schema import ValidationInfo
 from pydantic import PostgresDsn, field_validator, RedisDsn, Field
 
-from .base import SettingsMixin
+from pydantic_settings import BaseSettings
+
+dotenv.load_dotenv()
 
 
-class DBSettings(SettingsMixin):
+class DBSettings(BaseSettings):
     user: str = Field(alias="PG_USER")
     password: str = Field(alias="PG_PASSWORD")
     host: str = Field(alias="PG_HOST")
@@ -41,14 +44,14 @@ class DBSettings(SettingsMixin):
         )
 
 
-class RedisSettings(SettingsMixin):
+class RedisSettings(BaseSettings):
     user: str = Field(alias="REDIS_USER")
     password: str = Field(alias="REDIS_PASSWORD")
     host: str = Field(alias="REDIS_HOST")
     port: int = Field(alias="REDIS_PORT", default=6379)
     db_id: str = Field(alias="REDIS_DB")
 
-    dns: Optional[RedisDsn | str] = None
+    redis_dns: Optional[RedisDsn | str] = None
 
     @field_validator("redis_dns")  # noqa
     @classmethod
