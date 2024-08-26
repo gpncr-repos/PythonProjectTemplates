@@ -1,5 +1,7 @@
 {
-  "project_name": "test",
-  "service_name": "test_service",
-  "do_you_need_postgres": false
+  "project_name": "sample",
+  "service_name": "sample_service",
+  "add_postgres": false,
+  "add_redis": false,
+  "add_kafka": false
 }
