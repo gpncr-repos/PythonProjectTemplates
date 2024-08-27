@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+    {{cookiecutter.service_name}}.backend:
+      image: #python_image_path
+      environment:
+      env_file:
+        - ./.env
+
+
+    {{cookiecutter.service_name}}.zookeeper:
+      image: #zookeeper_image_path
+      hostname: {{cookiecutter.service_name}}.zookeeper
+      container_name: {{cookiecutter.service_name}}.zookeeper
+      ports:
+        - "31202:2181"
+      environment:
+        ZOOKEEPER_CLIENT_PORT: 2181
+        ZOOKEEPER_TICK_TIME: 2000
+
+    {{cookiecutter.service_name}}.kafka:
+      image: #kafka_image_path
+      hostname: {{cookiecutter.service_name}}.kafka
+      container_name: {{cookiecutter.service_name}}.kafka
+      depends_on:
+        - {{cookiecutter.service_name}}.zookeeper
+      ports:
+        - "31204:31204"
+      environment:
+        KAFKA_BROKER_ID: 1
+        KAFKA_ZOOKEEPER_CONNECT: {{cookiecutter.service_name}}.zookeeper:2181
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://{{cookiecutter.service_name}}.kafka:9092,PLAINTEXT_HOST://localhost:31204
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_NUM_PARTITIONS: 10
+      restart: on-failure
+
+
+    {{cookiecutter.service_name}}.postgres:
+      image: #pg_image_path
+      hostname: {{cookiecutter.service_name}}.postgres
+      container_name: {{cookiecutter.service_name}}.postgres
+      ports:
+        - "${POSTGRES_PORT}:5432"
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      env_file:
+        - ./.env
+
+volumes:
+  pgdata:

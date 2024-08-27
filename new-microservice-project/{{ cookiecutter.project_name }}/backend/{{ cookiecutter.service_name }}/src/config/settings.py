@@ -1,4 +1,6 @@
-from config.db_settings import DBSettings, RedisSettings
+from config.db_settings import DBSettings
+from config.kafka_settings import KafkaSettings
+from config.redis_settings import RedisSettings
 
 
 class Settings:
@@ -11,6 +13,4 @@ class Settings:
 
     db: DBSettings = DBSettings()
     redis: RedisSettings = RedisSettings()
-
-
-settings = Settings()
+    kafka: KafkaSettings = KafkaSettings()

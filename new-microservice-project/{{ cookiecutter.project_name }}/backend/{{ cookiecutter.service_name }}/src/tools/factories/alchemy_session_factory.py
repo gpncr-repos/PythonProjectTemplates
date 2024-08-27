@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import sessionmaker, Session
 
 # project
-from config import DBSettings
+from config.settings import Settings
 
 
 class AlchemySession:
@@ -20,12 +20,12 @@ class AlchemySession:
     Класс сессии sqlalchemy
     """
 
-    def __init__(self, settings: DBSettings) -> None:
+    def __init__(self, settings: Settings) -> None:
         """
         Инициализировать переменные
         """
 
-        db_url = settings.pg_sync_dsn
+        db_url = settings.db.pg_sync_dsn
 
         engine: Engine = create_engine(str(db_url), echo=True if settings.okd_stage == "DEV" else False)
         self.session_maker: Optional[sessionmaker] = sessionmaker(autocommit=False, bind=engine)
@@ -54,12 +54,12 @@ class AlchemyAsyncSession:
     Класс асинхронной сессии sqlalchemy
     """
 
-    def __init__(self, settings: DBSettings) -> None:
+    def __init__(self, settings: Settings) -> None:
         """
         Инициализировать переменные
         """
 
-        db_url = settings.pg_async_dsn
+        db_url = settings.db.pg_async_dsn
 
         engine: AsyncEngine = create_async_engine(str(db_url), echo=True if settings.okd_stage == "DEV" else False)
         self.session_maker: Optional[async_sessionmaker] = async_sessionmaker(autocommit=False, bind=engine)
