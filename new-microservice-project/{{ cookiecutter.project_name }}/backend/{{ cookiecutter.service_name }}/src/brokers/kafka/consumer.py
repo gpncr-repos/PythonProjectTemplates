@@ -4,7 +4,7 @@ import logging
 from typing import TypeVar
 
 # thirdparty
-from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from aiokafka import AIOKafkaConsumer
 from aiokafka.errors import KafkaError
 from pydantic import BaseModel, KafkaDsn, ValidationError
 

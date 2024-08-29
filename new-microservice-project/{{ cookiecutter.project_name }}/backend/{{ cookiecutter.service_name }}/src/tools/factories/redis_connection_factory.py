@@ -14,14 +14,14 @@ class RedisConnection:
         """
         Инициализировать переменные
         """
-        self.dns = settings.redis.dns
+        self.dsn = settings.redis.dsn
 
     def __call__(self) -> Redis:
         """
         Получить объект подключения Redis
         :return: Объект подключения Redis
         """
-        return from_url(self.dns)
+        return from_url(self.dsn)
 
 
 class RedisAsyncConnection:
@@ -33,11 +33,11 @@ class RedisAsyncConnection:
         """
         Инициализировать переменные
         """
-        self.dns = settings.redis.dns
+        self.dsn = settings.redis.dsn
 
     async def __call__(self) -> aioredis.Redis:
         """
         Получить объект подключения Redis
         :return: Объект подключения Redis
         """
-        return await aioredis.from_url(self.dns)
+        return await aioredis.from_url(self.dsn)
