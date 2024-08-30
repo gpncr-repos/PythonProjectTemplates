@@ -1,10 +1,46 @@
 import os
 import shutil
 
-BASE_DIR = os.getcwd()
+import yaml
 
 
-def remove(path_to_remove):
+def merge_docker_compose(files):
+    merged = {'version': None, 'services': {}, 'networks': {}, 'volumes': {}}
+
+    for file in files:
+        with open(file, 'r') as f:
+            data = yaml.safe_load(f)
+
+            # Объединяем версии
+            if merged['version'] is None:
+                merged['version'] = data.get('version')
+            elif merged['version'] != data.get('version'):
+                print(f"Warning: Versions do not match in {file}")
+
+            # Объединяем сервисы
+            if 'services' in data:
+                merged['services'].update(data['services'])
+
+            # Объединяем сети
+            if 'networks' in data:
+                merged['networks'].update(data['networks'])
+
+            # Объединяем тома
+            if 'volumes' in data:
+                merged['volumes'].update(data['volumes'])
+    merged = {key: val for key, val in merged.items() if val}
+    return merged
+
+def represent_none(self, _):
+    # Заменяет null на пустую строку при dump'е
+    return self.represent_scalar('tag:yaml.org,2002:null', '')
+
+def save_merged_file(merged_data, output_file):
+    yaml.add_representer(type(None), represent_none)
+    with open(output_file, 'w') as f:
+        yaml.dump(merged_data, f, sort_keys=False)
+
+def remove_files(path_to_remove):
     if os.path.isfile(path_to_remove):
         os.remove(path_to_remove)
         print(f'File with path {path_to_remove} was removed')
@@ -13,32 +49,48 @@ def remove(path_to_remove):
         print(f'Directory with path {path_to_remove} was removed')
 
 
+BASE_DIR = os.getcwd()
+
 add_postgres = '{{cookiecutter.add_postgres}}' == 'True'
 add_redis = '{{cookiecutter.add_redis}}' == 'True'
 add_kafka = '{{cookiecutter.add_kafka}}' == 'True'
 
+to_compose = [os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/to_compose/app.yaml')]
+to_remove = []
 
 if not add_postgres:
-    paths = [
+    pg_paths = [
         os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/config/db_settings.py'),
     ]
-    for path in paths:
-        remove(path)
-
+    to_remove.extend(pg_paths)
+else:
+    to_compose.append(
+        os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/to_compose/postgres.yaml'))
 
 if not add_redis:
-    paths = [
-        os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/tools/factories/redis_connection.py'),
+    redis_paths = [
+        os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}',
+                     'src/tools/factories/redis_connection_factory.py'),
         os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/config/redis_settings.py'),
     ]
-    for path in paths:
-        remove(path)
+    to_remove.extend(redis_paths)
+else:
+    to_compose.append(os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/to_compose/redis.yaml'))
 
 if not add_kafka:
-    paths = [
+    kafka_paths = [
         os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/brokers/kafka.py'),
         os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/interfaces/message_broker.py'),
         os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/config/kafka_settings.py'),
     ]
-    for path in paths:
-        remove(path)
+    to_remove.extend(kafka_paths)
+else:
+    to_compose.append(os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/to_compose/kafka.yaml'))
+
+merged_data = merge_docker_compose(to_compose)
+compose_file_path = os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/docker-compose.yaml')
+save_merged_file(merged_data, compose_file_path)
+
+to_remove.append(os.path.join(BASE_DIR, 'backend', '{{cookiecutter.service_name}}', 'src/to_compose'))
+for path in to_remove:
+    remove_files(path)
