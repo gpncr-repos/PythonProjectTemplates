@@ -1,4 +1,4 @@
-from config.db_settings import DBSettings
+from config.postgres_settings import PostgresSettings
 from config.kafka_settings import KafkaSettings
 from config.redis_settings import RedisSettings
 
@@ -11,6 +11,6 @@ class Settings:
     app_host: str = "localhost"
     app_port: int = 8000
 
-    db: DBSettings = DBSettings()
+    postgres: PostgresSettings = PostgresSettings()
     redis: RedisSettings = RedisSettings()
     kafka: KafkaSettings = KafkaSettings()

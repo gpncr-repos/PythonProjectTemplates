@@ -25,7 +25,7 @@ class AlchemySession:
         Инициализировать переменные
         """
 
-        db_url = settings.db.pg_sync_dsn
+        db_url = settings.postgres.pg_sync_dsn
 
         engine: Engine = create_engine(str(db_url), echo=True if settings.okd_stage == "DEV" else False)
         self.session_maker: Optional[sessionmaker] = sessionmaker(autocommit=False, bind=engine)
@@ -59,7 +59,7 @@ class AlchemyAsyncSession:
         Инициализировать переменные
         """
 
-        db_url = settings.db.pg_async_dsn
+        db_url = settings.postgres.pg_async_dsn
 
         engine: AsyncEngine = create_async_engine(str(db_url), echo=True if settings.okd_stage == "DEV" else False)
         self.session_maker: Optional[async_sessionmaker] = async_sessionmaker(autocommit=False, bind=engine)

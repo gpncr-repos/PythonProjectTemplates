@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 dotenv.load_dotenv()
 
 
-class DBSettings(BaseSettings):
+class PostgresSettings(BaseSettings):
     user: str = Field(alias="POSTGRES_USER")
     password: str = Field(alias="POSTGRES_PASSWORD")
     host: str = Field(alias="POSTGRES_HOST")
