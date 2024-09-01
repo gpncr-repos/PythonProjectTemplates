@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  {{cookiecutter.service_name}}.postgres:
+    image: #pg_image_path
+    hostname: {{cookiecutter.service_name}}.postgres
+    container_name: {{cookiecutter.service_name}}.postgres
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+
+volumes:
+  pgdata:

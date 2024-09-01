@@ -1,4 +1,7 @@
 {
-  "project_name": "test",
-  "service_name": "test_service"
+  "project_name": "sample",
+  "service_name": "sample_service",
+  "add_postgres": false,
+  "add_redis": false,
+  "add_kafka": false
 }
