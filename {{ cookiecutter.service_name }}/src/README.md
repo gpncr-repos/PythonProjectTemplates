@@ -1,0 +1,1 @@
+# Сервис {{ cookiecutter.service_name }}
