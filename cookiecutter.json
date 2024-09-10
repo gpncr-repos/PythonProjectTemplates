@@ -1,0 +1,4 @@
+{
+  "service_name": "test_service",
+  "async_fastapi": ["auto", "wsgi"]
+}
