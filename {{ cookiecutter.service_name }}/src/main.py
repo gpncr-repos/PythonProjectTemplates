@@ -3,6 +3,8 @@ import uvicorn
 
 from config import app_config
 from config import uvicorn_config
+from tools import di_container
+from web.tools import router_registrator
 
 app_config = app_config.app_config
 
@@ -23,6 +25,15 @@ def create_app() -> fastapi.FastAPI:
 
 
 app = create_app()
+router_registrator.register_routers(app)
 
 if __name__ == "__main__":
+    session_container = di_container.DomainContainer()
+
+    modules = [
+        "services.oil_rate_calc_service"
+    ]
+
+    session_container.wire(modules=modules)
+
     uvicorn.run("main:app", **uvicorn_config.uvicorn_config)

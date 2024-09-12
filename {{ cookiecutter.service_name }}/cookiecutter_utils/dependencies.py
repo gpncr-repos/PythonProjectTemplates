@@ -32,7 +32,9 @@ class DependenciesCreator:
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
         self.dependencies = {
-            "uvicorn": "^0.30.6"
+            "uvicorn": "^0.30.6",
+            "pydantic-settings": "^2.5.0",
+            "dependency-injector": "^4.41.0"
         }
 
     def remove_dependency(self, name: str) -> None:
