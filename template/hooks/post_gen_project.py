@@ -1,4 +1,18 @@
+import dataclasses
+import pathlib
+import sys
 import textwrap
+
+
+@dataclasses.dataclass
+class Config:
+    """
+    Конфиг пост-хука
+    """
+
+    # Путь к папке src шаблона
+    template_path = pathlib.Path.cwd().resolve().parent / "{{ cookiecutter.service_name }}" / "src"
+
 
 class DependenciesCreator:
     """
@@ -19,11 +33,11 @@ class DependenciesCreator:
                 description = ""
                 authors = ["gpn_team"]
                 readme = "README.md"
-                
+
                 [build-system]
                 requires = ["poetry-core"]
                 build-backend = "poetry.core.masonry.api"
-                
+
                 [tool.poetry.dependencies]
                 python = "^3.11"
                 fastapi = "^0.114.0"
@@ -55,3 +69,28 @@ class DependenciesCreator:
         ]
 
         return self.pyproject_template + "\n".join(final_dependencies)
+
+
+def main() -> None:
+    """
+    Вызвать функции для выполнения логики пост-хука
+    """
+
+    create_poetry_dependencies()
+
+
+def create_poetry_dependencies() -> None:
+    """
+    Создать файл зависимостей poetry
+    """
+
+    creator = DependenciesCreator()
+    file_content = creator.create_pyproject()
+    file_path = str(Config.template_path / "pyproject.toml")
+
+    with open(file_path, "w") as f:
+        f.write(file_content)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
