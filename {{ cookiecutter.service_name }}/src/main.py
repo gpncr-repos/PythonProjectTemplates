@@ -3,7 +3,6 @@ import uvicorn
 
 from config import app_config
 from config import uvicorn_config
-from tools.di_containers import domain_di_container, service_di_container
 from web.tools import router_registrator
 
 app_config = app_config.app_config
@@ -25,13 +24,6 @@ def create_app() -> fastapi.FastAPI:
 
 
 app = create_app()
-
-domain_container = domain_di_container.DomainContainer()
-service_container = service_di_container.ServiceContainer()
-
-app.domain_container = domain_container
-app.service_container = service_container
-
 router_registrator.register_routers(app)
 
 if __name__ == "__main__":
