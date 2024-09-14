@@ -2,10 +2,10 @@ import uuid
 
 from pydantic import Field
 
-from interfaces import base_pydantic
+from interfaces import base_dto
 
 
-class GeologyPropertiesDTO(base_pydantic.PydanticModel):
+class GeologyPropertiesDTO(base_dto.BaseDTO, base_dto.ConfigMixin):
     """
     DTO, содержащий данные о геологическом пласте
     """
@@ -17,7 +17,7 @@ class GeologyPropertiesDTO(base_pydantic.PydanticModel):
     oil_viscosity: float = Field(description="Вязкость нефти, мПа*с")
 
 
-class WellPropertiesDTO(base_pydantic.PydanticModel):
+class WellPropertiesDTO(base_dto.BaseDTO, base_dto.ConfigMixin):
     """
     DTO, содержащий данные о скважине
     """

@@ -1,15 +1,7 @@
 import abc
 
 
-class DomainModelObject(abc.ABC):
-    """
-    Базовый класс для объекта доменной модели
-    """
-
-    pass
-
-
-class DomainAggregate(DomainModelObject, abc.ABC):
+class DomainAggregate(abc.ABC):
     """
     Базовый класс агрегата
     """
@@ -17,7 +9,7 @@ class DomainAggregate(DomainModelObject, abc.ABC):
     pass
 
 
-class DomainValueObject(DomainModelObject, abc.ABC):
+class DomainValueObject(abc.ABC):
     """
     Базовый класс для value object домена
     """
@@ -25,7 +17,7 @@ class DomainValueObject(DomainModelObject, abc.ABC):
     pass
 
 
-class DomainEntityObject(DomainModelObject, abc.ABC):
+class DomainEntityObject(abc.ABC):
     """
     Базовый класс для entity домена
     """
