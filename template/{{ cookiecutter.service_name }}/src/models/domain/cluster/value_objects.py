@@ -3,7 +3,7 @@ import dataclasses
 from interfaces import base_domain_model as domain
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class GeologyProperties(domain.DomainValueObject):
     """
     Класс, описывающий геологические параметры пласта
