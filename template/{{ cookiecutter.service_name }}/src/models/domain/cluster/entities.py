@@ -79,8 +79,8 @@ class Well(domain.DomainEntityObject):
         """
 
         return (
-            2 * math.pi * permeability * const.ClusterDomain.milli_darcy_si_converter_coef * thickness /
-            (oil_viscosity * const.ClusterDomain.milli_pascal_si_converter) *
-            (layer_pressure - self._wellbore_pressure) * const.ClusterDomain.mega_pascal_si_converter /
-            math.log(supply_contour_radius / self._radius)
+                2 * math.pi * permeability * const.ClusterDomain.milli_darcy_si_converter_coef * thickness /
+                (oil_viscosity * const.ClusterDomain.milli_pascal_si_converter) *
+                (layer_pressure - self._wellbore_pressure) * const.ClusterDomain.mega_pascal_si_converter /
+                math.log(supply_contour_radius / self._radius)
         )
