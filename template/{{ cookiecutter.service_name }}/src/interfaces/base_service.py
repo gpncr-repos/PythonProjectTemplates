@@ -14,24 +14,10 @@ class BaseSyncService(abc.ABC):
 
         super().__init__(*args, **kwargs)
 
-    @abc.abstractmethod
-    def __call__(self, *args, **kwargs) -> any:
-        """
-        Выполнить логику сервиса
-        """
-
-        raise NotImplementedError
-
 
 class BaseAsyncService(BaseSyncService, abc.ABC):
     """
     Базовый класс асинхронного сервиса
     """
 
-    @abc.abstractmethod
-    async def __call__(self, *args, **kwargs) -> any:
-        """
-        Выполнить логику сервиса
-        """
-
-        raise NotImplementedError
+    pass

@@ -1,7 +1,7 @@
 {
   "project_name": "test_project",
   "service_name": "test_service",
-  "service_version": "1.0.0",
+  "api_version": "v1",
   "service_host": "0.0.0.0",
   "service_port": 8080,
   "okd_stage": ["DEV", "PROD"],

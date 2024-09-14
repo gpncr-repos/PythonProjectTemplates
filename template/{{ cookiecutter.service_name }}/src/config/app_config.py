@@ -9,7 +9,7 @@ class Config(BaseSettings):
 
     project_name: str = Field(description="Название проекта", default="{{ cookiecutter.project_name }}")
     app_name: str = Field(description="Название сервиса", default="{{ cookiecutter.service_name }}")
-    app_version: str = Field(description="Версия сервиса", default="{{ cookiecutter.service_version }}")
+    app_version: str = Field(description="Версия API", default="{{ cookiecutter.api_version }}")
 
     app_host: str = Field(description="Хост сервиса", default="{{ cookiecutter.service_host }}", alias="PROJECT_HOST")
     app_port: int = Field(description="Порт сервиса", default="{{ cookiecutter.service_port }}", alias="PROJECT_PORT")

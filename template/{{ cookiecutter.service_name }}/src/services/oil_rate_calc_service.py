@@ -34,7 +34,7 @@ class OilRateCalcService(base_service.BaseSyncService):
         self.geology_params = geology_params
         self.wells = wells
 
-    def __call__(self) -> float:
+    def calculate_cluster_oil_rate(self) -> float:
         """
         Выполнить логику расчета дебита куста скважин
         :return: дебит куста скважин

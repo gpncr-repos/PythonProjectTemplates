@@ -18,7 +18,8 @@ def create_app() -> fastapi.FastAPI:
         title=app_config.project_name,
         version=app_config.app_version,
         debug=True if app_config.okd_stage == "DEV" else False,
-        default_response_class=fastapi.responses.ORJSONResponse
+        default_response_class=fastapi.responses.ORJSONResponse,
+        root_path=f"api/{app_config.app_version}"
     )
 
     return fastapi_app
@@ -29,11 +30,16 @@ router_registrator.register_routers(app)
 
 if __name__ == "__main__":
     session_container = di_container.DomainContainer()
+    service_container = di_container.ServiceContainer()
 
-    modules = [
+    service_modules = [
         "services.oil_rate_calc_service"
     ]
+    entrypoint_modules = [
+        "web.entrypoints.oil_rate_calculator_entrypoint"
+    ]
 
-    session_container.wire(modules=modules)
+    session_container.wire(modules=service_modules)
+    service_container.wire(modules=entrypoint_modules)
 
     uvicorn.run("main:app", **uvicorn_config.uvicorn_config)
