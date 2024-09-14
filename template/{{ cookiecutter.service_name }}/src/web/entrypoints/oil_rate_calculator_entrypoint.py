@@ -4,7 +4,7 @@ from fastapi.params import Depends
 
 from interfaces import base_factory
 from models.dto import cluster_domain_dto
-from tools import di_container
+from tools.di_containers import service_di_container
 from web.schemas import oil_rate_calculator_schema
 
 router = APIRouter(prefix="/cluster")
@@ -14,7 +14,9 @@ router = APIRouter(prefix="/cluster")
 @inject
 async def calc_cluster_oil_rate(
     calc_data: oil_rate_calculator_schema.ClusterSchema,
-    calc_service_factory: base_factory.BaseFactory = Depends(Provide[di_container.ServiceContainer])
+    calc_service_factory: base_factory.BaseFactory = Depends(
+        Provide[service_di_container.ServiceContainer.oil_rate_calc_service_factory]
+    )
 ) -> oil_rate_calculator_schema.ClusterOilRate:
     """
     Рассчитать дебит нефти для куста скважин
