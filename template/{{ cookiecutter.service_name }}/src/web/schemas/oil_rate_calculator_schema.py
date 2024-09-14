@@ -6,7 +6,7 @@ from interfaces import base_web_schema
 from interfaces.base_web_schema import BaseWebSchema
 
 
-class WellSchema(base_web_schema.BaseWebSchema):
+class WellSchema(base_web_schema.BaseWebSchema, base_web_schema.ConfigMixin):
     """
     Схема данных модели скважины
     """
@@ -17,7 +17,7 @@ class WellSchema(base_web_schema.BaseWebSchema):
     radius: float = Field(description="Радиус скважины, м")
 
 
-class GeologyPropertiesSchema(base_web_schema.BaseWebSchema):
+class GeologyPropertiesSchema(base_web_schema.BaseWebSchema, base_web_schema.ConfigMixin):
     """
     Схема модели данных о геологическом пласте
     """
@@ -29,7 +29,7 @@ class GeologyPropertiesSchema(base_web_schema.BaseWebSchema):
     oil_viscosity: float = Field(description="Вязкость нефти, мПа*с", alias="oilViscosity")
 
 
-class ClusterSchema(base_web_schema.BaseWebSchema):
+class ClusterSchema(base_web_schema.BaseWebSchema, base_web_schema.ConfigMixin):
     """
     Схема данных модели куста
     """
@@ -38,5 +38,5 @@ class ClusterSchema(base_web_schema.BaseWebSchema):
     wells: list[WellSchema] = Field(description="Список скважин")
 
 
-class ClusterOilRate(base_web_schema.BaseWebSchema):
+class ClusterOilRate(base_web_schema.BaseWebSchema, base_web_schema.ConfigMixin):
     oil_rate: float = Field(description="Дебит нефти для куста", alias="oilRate")
