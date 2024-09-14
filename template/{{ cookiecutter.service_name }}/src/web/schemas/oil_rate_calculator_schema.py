@@ -2,10 +2,11 @@ import uuid
 
 from pydantic import Field
 
-from interfaces import base_pydantic
+from interfaces import base_web_schema
+from interfaces.base_web_schema import BaseWebSchema
 
 
-class WellSchema(base_pydantic.PydanticModel):
+class WellSchema(base_web_schema.BaseWebSchema):
     """
     Схема данных модели скважины
     """
@@ -16,7 +17,7 @@ class WellSchema(base_pydantic.PydanticModel):
     radius: float = Field(description="Радиус скважины, м")
 
 
-class GeologyPropertiesSchema(base_pydantic.PydanticModel):
+class GeologyPropertiesSchema(base_web_schema.BaseWebSchema):
     """
     Схема модели данных о геологическом пласте
     """
@@ -28,7 +29,7 @@ class GeologyPropertiesSchema(base_pydantic.PydanticModel):
     oil_viscosity: float = Field(description="Вязкость нефти, мПа*с", alias="oilViscosity")
 
 
-class ClusterSchema(base_pydantic.PydanticModel):
+class ClusterSchema(base_web_schema.BaseWebSchema):
     """
     Схема данных модели куста
     """
@@ -37,5 +38,5 @@ class ClusterSchema(base_pydantic.PydanticModel):
     wells: list[WellSchema] = Field(description="Список скважин")
 
 
-class ClusterOilRate(base_pydantic.PydanticModel):
+class ClusterOilRate(base_web_schema.BaseWebSchema):
     oil_rate: float = Field(description="Дебит нефти для куста", alias="oilRate")
