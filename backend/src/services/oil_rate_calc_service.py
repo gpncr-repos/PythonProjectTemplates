@@ -5,7 +5,7 @@ from models.dto import cluster_domain_dto
 from tools.di_containers import domain_di_container
 
 
-class OilRateCalcService(base_service.BaseSyncService):
+class OilRateCalcService(base_service.BaseOilRateCalculatorService):
     """
     Сервис для работы с логикой расчета дебита куста скважин
     """
@@ -20,30 +20,20 @@ class OilRateCalcService(base_service.BaseSyncService):
         domain_di_container.DomainContainer.cluster_factory
     ]
 
-    def __init__(
+    def calc_oil_rate(
         self,
         geology_params: cluster_domain_dto.GeologyPropertiesDTO,
         wells: list[cluster_domain_dto.WellPropertiesDTO]
-    ) -> None:
-        """
-        Инициализировать переменные
-        :param geology_params: геологические параметры
-        :param wells: скважины
-        """
-
-        self.geology_params = geology_params
-        self.wells = wells
-
-    def calculate_cluster_oil_rate(self) -> float:
+    ) -> float:
         """
         Выполнить логику расчета дебита куста скважин
         :return: дебит куста скважин
         """
 
-        geology_params = self.geology_params_factory.create(self.geology_params)
+        geology_params = self.geology_params_factory.create(geology_params)
         wells = [
             self.well_factory.create(well_params)
-            for well_params in self.wells
+            for well_params in wells
         ]
         cluster = self.cluster_factory.create(geology_params)
 

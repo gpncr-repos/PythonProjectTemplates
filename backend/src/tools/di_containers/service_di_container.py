@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 
-from tools.factories import service_factory
+from services import oil_rate_calc_service
 
 
 class ServiceContainer(containers.DeclarativeContainer):
@@ -10,4 +10,4 @@ class ServiceContainer(containers.DeclarativeContainer):
 
     wiring_config = containers.WiringConfiguration(modules=["web.entrypoints.oil_rate_calculator_entrypoint"])
 
-    oil_rate_calc_service_factory = providers.Factory(service_factory.OilRateCalcServiceFactory)
+    oil_rate_calc_service = providers.Factory(oil_rate_calc_service.OilRateCalcService)

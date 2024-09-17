@@ -1,23 +1,15 @@
 import abc
 
 
-class BaseSyncService(abc.ABC):
+class BaseOilRateCalculatorService(abc.ABC):
     """
-    Базовый класс синхронного сервиса
+    Базовый класс сервиса расчета дебита нефти
     """
 
     @abc.abstractmethod
-    def __init__(self, *args, **kwargs) -> None:
+    def calc_oil_rate(self, *args, **kwargs) -> None:
         """
-        Инициализировать переменные
+        Рассчитать дебит нефти
         """
 
-        super().__init__(*args, **kwargs)
-
-
-class BaseAsyncService(BaseSyncService, abc.ABC):
-    """
-    Базовый класс асинхронного сервиса
-    """
-
-    pass
+        raise NotImplementedError

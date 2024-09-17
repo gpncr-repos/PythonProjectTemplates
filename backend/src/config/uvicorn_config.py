@@ -7,5 +7,5 @@ uvicorn_config = {
     "port": config.app_port,
     "log_level": "info",
     "reload": True,
-    "interface": "{{ cookiecutter.async_fastapi }}"
+    "interface": "auto"
 }

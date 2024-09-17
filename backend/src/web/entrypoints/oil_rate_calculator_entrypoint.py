@@ -2,7 +2,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter
 from fastapi.params import Depends
 
-from interfaces import base_factory
+from interfaces import base_service
 from models.dto import cluster_domain_dto
 from tools.di_containers import service_di_container
 from web.schemas import oil_rate_calculator_schema
@@ -14,14 +14,14 @@ router = APIRouter(prefix="/cluster")
 @inject
 async def calc_cluster_oil_rate(
     calc_data: oil_rate_calculator_schema.ClusterSchema,
-    calc_service_factory: base_factory.BaseFactory = Depends(
-        Provide[service_di_container.ServiceContainer.oil_rate_calc_service_factory]
+    calc_service: base_service.BaseOilRateCalculatorService = Depends(
+        Provide[service_di_container.ServiceContainer.oil_rate_calc_service]
     )
 ) -> oil_rate_calculator_schema.ClusterOilRate:
     """
     Рассчитать дебит нефти для куста скважин
     :param calc_data: исходные данные для расчета дебита нефти куста скважин
-    :param calc_service_factory: фабрика сервисов расчетов дебита куста скважин
+    :param calc_service: сервис расчетов дебита куста скважин
     :return: дебит нефти куста скважин
     """
 
@@ -42,8 +42,6 @@ async def calc_cluster_oil_rate(
         for well in calc_data.wells
     ]
 
-    calc_service = calc_service_factory.create(geology_params, wells)
-
-    result = calc_service.calculate_cluster_oil_rate()
+    result = calc_service.calc_oil_rate(geology_params, wells)
 
     return oil_rate_calculator_schema.ClusterOilRate(oil_rate=result)
