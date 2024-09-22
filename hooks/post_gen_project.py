@@ -1,6 +1,7 @@
 from collections import namedtuple
 import dataclasses
 import pathlib
+import shutil
 import sys
 import textwrap
 
@@ -50,7 +51,9 @@ class DependenciesCreator:
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
         self.dependencies = {
-            "strawberry-graphql": "^0.241.0"
+            "strawberry-graphql": "^0.241.0",
+            "grpcio": "^1.66.1",
+            "grpcio-tools": "^1.66.1"
         }
 
     def remove_dependency(self, name: str) -> None:
@@ -76,14 +79,24 @@ class DependenciesCreator:
 poetry_creator = DependenciesCreator()
 
 
-def delete_files(*file_paths: pathlib.Path) -> None:
+def remove_files(*files_paths: pathlib.Path) -> None:
     """
-    Удалить директорию
-    :param file_paths: полный путь до директории
+    Удалить файлы
+    :param files_paths: полный путь до файлов
     """
 
-    for file_path in file_paths:
+    for file_path in files_paths:
         file_path.unlink()
+
+
+def remove_directories(*directories_paths: pathlib.Path) -> None:
+    """
+    Удалить директории
+    :param directories_paths: полный путь до директорий
+    """
+
+    for directory_path in directories_paths:
+        shutil.rmtree(directory_path)
 
 
 def rename_file(file_path: pathlib.Path, new_name: str) -> None:
@@ -95,6 +108,9 @@ def rename_file(file_path: pathlib.Path, new_name: str) -> None:
 
     new_name_file_path = file_path.parent / new_name
     file_path.rename(new_name_file_path)
+
+
+RenameFile = namedtuple("RenameFile", ["path", "new_name"])
 
 
 def main() -> None:
@@ -130,25 +146,30 @@ def handle_api_architecture() -> None:
 
         poetry_creator.remove_dependency("strawberry-graphql")
 
-        to_delete = (
+        files_to_delete = (
             Config.template_path / "web" / "entrypoints" / "graphql_index_entrypoint.py",
+            Config.template_path / "web" / "entrypoints" / "grpc_index_entrypoint.py",
             Config.template_path / "web" / "schemas" / "index_schema.py",
-            Config.template_path / "web" / "tools" / "graphql_router_registrator.py"
+            Config.template_path / "web" / "tools" / "grpc_channels.py",
+            Config.template_path / "web" / "tools" / "grpc_server.py",
+            Config.template_path / "web" / "tools" / "service_registrator.py",
+            Config.template_path / "services" / "index_service.py",
+            Config.template_path / "interfaces" / "base_grpc_channel.py"
         )
 
-        delete_files(*to_delete)
+        remove_files(*files_to_delete)
 
-        RenameFile = namedtuple("RenameFile", ["path", "new_name"])
+        directories_to_delete = (
+            Config.template_path / "protobufs",
+        )
+
+        remove_directories(*directories_to_delete)
 
         to_rename = (
             RenameFile(
                 Config.template_path / "web" / "entrypoints" / "rest_index_entrypoint.py",
                 "index_entrypoint.py"
             ),
-            RenameFile(
-                Config.template_path / "web" / "tools" / "rest_router_registrator.py",
-                "router_registrator.py"
-            )
         )
 
         for file in to_rename:
@@ -159,24 +180,52 @@ def handle_api_architecture() -> None:
         Выбрать реализацию GraphQL
         """
 
-        to_delete = (
+        files_to_delete = (
             Config.template_path / "web" / "entrypoints" / "rest_index_entrypoint.py",
-            Config.template_path / "web" / "tools" / "rest_router_registrator.py"
+            Config.template_path / "web" / "entrypoints" / "grpc_index_entrypoint.py",
+            Config.template_path / "web" / "tools" / "grpc_channels.py",
+            Config.template_path / "web" / "tools" / "grpc_server.py",
+            Config.template_path / "web" / "tools" / "service_registrator.py",
+            Config.template_path / "services" / "index_service.py",
+            Config.template_path / "interfaces" / "base_grpc_channel.py"
         )
 
-        delete_files(*to_delete)
+        remove_files(*files_to_delete)
 
-        RenameFile = namedtuple("RenameFile", ["path", "new_name"])
+        directories_to_delete = (
+            Config.template_path / "protobufs",
+        )
+
+        remove_directories(*directories_to_delete)
 
         to_rename = (
             RenameFile(
                 Config.template_path / "web" / "entrypoints" / "graphql_index_entrypoint.py",
                 "index_entrypoint.py"
             ),
+        )
+
+        for file in to_rename:
+            rename_file(file.path, file.new_name)
+
+    def _choose_grpc() -> None:
+        """
+        Выбрать реализацию GraphQL
+        """
+
+        files_to_delete = (
+            Config.template_path / "web" / "entrypoints" / "rest_index_entrypoint.py",
+            Config.template_path / "web" / "entrypoints" / "graphql_index_entrypoint.py",
+            Config.template_path / "web" / "schemas" / "index_schema.py"
+        )
+
+        remove_files(*files_to_delete)
+
+        to_rename = (
             RenameFile(
-                Config.template_path / "web" / "tools" / "graphql_router_registrator.py",
-                "router_registrator.py"
-            )
+                Config.template_path / "web" / "entrypoints" / "grpc_index_entrypoint.py",
+                "index_entrypoint.py"
+            ),
         )
 
         for file in to_rename:
@@ -185,7 +234,8 @@ def handle_api_architecture() -> None:
     api_architecture = "{{ cookiecutter.api_architecture }}"
     api_choices = {
         "rest": _choose_rest,
-        "graphql": _choose_graphql
+        "graphql": _choose_graphql,
+        "grpc": _choose_grpc
     }
 
     api_choices[api_architecture]()

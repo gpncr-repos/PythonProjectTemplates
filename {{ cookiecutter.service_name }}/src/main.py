@@ -1,29 +1,23 @@
-import fastapi
+from dependency_injector import providers
 import uvicorn
 
-from config import app_config
 from config import uvicorn_config
-from web.tools import router_registrator
-
-app_config = app_config.app_config
-
-
-def create_app() -> fastapi.FastAPI:
-    """
-    Инициализировать приложение FastAPI
-    """
-
-    fastapi_app = fastapi.FastAPI(
-        title=app_config.project_name,
-        version=app_config.app_version,
-        debug=True if app_config.okd_stage == "DEV" else False,
-        default_response_class=fastapi.responses.JSONResponse
+{% if cookiecutter.api_architecture == "grpc" %}
+from protobufs import index_pb2_grpc
+from tools.di_containers import stub_di_container
+{% endif %}
+from web.tools import fast_api_initializer, router_registrator
+{% if cookiecutter.api_architecture == "grpc" %}
+index_stub_container = stub_di_container.IndexStubContainer()
+channel = index_stub_container.channel()
+index_stub_container.stub.override(
+    providers.Factory(
+        index_pb2_grpc.IndexServiceStub,
+        channel=channel.get_channel()
     )
-
-    return fastapi_app
-
-
-app = create_app()
+)
+{% endif %}
+app = fast_api_initializer.initiliaze_app()
 router_registrator.register_routers(app)
 
 if __name__ == "__main__":
