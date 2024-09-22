@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+    {{cookiecutter.service_name}}.backend:
+      image: #python_image_path
+      env_file:
+        - ./.env
