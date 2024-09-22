@@ -6,5 +6,8 @@
   "service_port": 8080,
   "okd_stage": ["DEV", "PROD"],
   "async_fastapi": ["auto", "wsgi"],
-  "api_architecture": ["rest", "graphql"]
+  "api_architecture": ["rest", "graphql"],
+  "add_postgres": false,
+  "add_redis": false,
+  "add_kafka": false
 }

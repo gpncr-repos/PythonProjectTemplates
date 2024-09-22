@@ -1,8 +1,11 @@
 from collections import namedtuple
 import dataclasses
+import os
 import pathlib
+import shutil
 import sys
 import textwrap
+import yaml
 
 
 @dataclasses.dataclass
@@ -73,37 +76,110 @@ class DependenciesCreator:
         return self.pyproject_template + "\n".join(final_dependencies)
 
 
+class FileManager:
+    def __init__(self):
+        self.paths_to_remove: list[pathlib.Path | None] = []
+
+    def remove_files(self) -> None:
+        """
+        Удалить файл или директорию
+        """
+
+        for path in self.paths_to_remove:
+            if os.path.isfile(path):
+                os.remove(path)
+            elif os.path.isdir(path):
+                shutil.rmtree(path)
+
+    def rename_file(self, file_path: pathlib.Path, new_name: str) -> None:
+        """
+        Переименовать файл
+        :param file_path: полный путь до директории
+        :param new_name: новое название файла
+        """
+
+        new_name_file_path = file_path.parent / new_name
+        file_path.rename(new_name_file_path)
+
+
+class DockerComposeMerger:
+    def __init__(self):
+        self.files_to_compose = []
+
+    def _merge_docker_compose(self) -> dict:
+        """
+        Собрать словарь из yaml файлов
+        :return merged: собранный словарь
+        """
+
+        merged = {'version': None, 'services': {}, 'networks': {}, 'volumes': {}}
+
+        for file in self.files_to_compose:
+            with open(file, 'r') as f:
+                data = yaml.safe_load(f)
+
+                if merged['version'] is None:
+                    merged['version'] = data.get('version')
+                elif merged['version'] != data.get('version'):
+                    print(f"Warning: Versions do not match in {file}")
+
+                if 'services' in data:
+                    merged['services'].update(data['services'])
+
+                if 'networks' in data:
+                    merged['networks'].update(data['networks'])
+
+                if 'volumes' in data:
+                    merged['volumes'].update(data['volumes'])
+        merged = {key: val for key, val in merged.items() if val}
+        return merged
+
+    def save_merged_file(self, output_file_path: pathlib.Path) -> None:
+
+        def _represent_none(self, _):
+            # Заменяет null на пустую строку при dump'е
+            return self.represent_scalar('tag:yaml.org,2002:null', '')
+
+        yaml.add_representer(type(None), _represent_none)
+        merged_data = self._merge_docker_compose()
+        with open(output_file_path, 'w') as f:
+            yaml.dump(merged_data, f, sort_keys=False)
+
+
+class ModulePaths:
+    postgres = {
+        'modules': [
+            Config.template_path / "config" / "pg_config.py",
+        ],
+        'compose': Config.template_path / "to_compose" / "postgres.yaml"
+    }
+    kafka = {
+        'modules': [
+            Config.template_path / "config" / "kafka_config.py",
+            Config.template_path / "brokers" / "kafka",
+        ],
+        'compose': Config.template_path / "to_compose" / "kafka.yaml"
+    }
+    redis = {
+        'modules': [
+            Config.template_path / "config" / "redis_config.py",
+        ],
+        'compose': Config.template_path / "to_compose" / "redis.yaml"
+    }
+    rest = [
+        Config.template_path / "web" / "entrypoints" / "rest_index_entrypoint.py",
+        Config.template_path / "web" / "tools" / "rest_router_registrator.py"
+    ]
+    graphql = [
+        Config.template_path / "web" / "entrypoints" / "graphql_index_entrypoint.py",
+        Config.template_path / "web" / "schemas" / "index_schema.py",
+        Config.template_path / "web" / "tools" / "graphql_router_registrator.py"
+    ]
+
+
 poetry_creator = DependenciesCreator()
-
-
-def delete_files(*file_paths: pathlib.Path) -> None:
-    """
-    Удалить директорию
-    :param file_paths: полный путь до директории
-    """
-
-    for file_path in file_paths:
-        file_path.unlink()
-
-
-def rename_file(file_path: pathlib.Path, new_name: str) -> None:
-    """
-    Переименовать файл
-    :param file_path: полный путь до директории
-    :param new_name: новое название файла
-    """
-
-    new_name_file_path = file_path.parent / new_name
-    file_path.rename(new_name_file_path)
-
-
-def main() -> None:
-    """
-    Вызвать функции для выполнения логики пост-хука
-    """
-
-    handle_api_architecture()
-    create_poetry_dependencies()
+file_manager = FileManager()
+compose_merger = DockerComposeMerger()
 
 
 def create_poetry_dependencies() -> None:
@@ -130,13 +206,9 @@ def handle_api_architecture() -> None:
 
         poetry_creator.remove_dependency("strawberry-graphql")
 
-        to_delete = (
-            Config.template_path / "web" / "entrypoints" / "graphql_index_entrypoint.py",
-            Config.template_path / "web" / "schemas" / "index_schema.py",
-            Config.template_path / "web" / "tools" / "graphql_router_registrator.py"
-        )
+        graphql_paths_to_delete = ModulePaths.graphql
 
-        delete_files(*to_delete)
+        file_manager.paths_to_remove.extend(graphql_paths_to_delete)
 
         RenameFile = namedtuple("RenameFile", ["path", "new_name"])
 
@@ -152,19 +224,16 @@ def handle_api_architecture() -> None:
         )
 
         for file in to_rename:
-            rename_file(file.path, file.new_name)
+            file_manager.rename_file(file.path, file.new_name)
 
     def _choose_graphql() -> None:
         """
         Выбрать реализацию GraphQL
         """
 
-        to_delete = (
-            Config.template_path / "web" / "entrypoints" / "rest_index_entrypoint.py",
-            Config.template_path / "web" / "tools" / "rest_router_registrator.py"
-        )
+        rest_paths_to_delete = ModulePaths.graphql
 
-        delete_files(*to_delete)
+        file_manager.paths_to_remove.extend(rest_paths_to_delete)
 
         RenameFile = namedtuple("RenameFile", ["path", "new_name"])
 
@@ -180,7 +249,7 @@ def handle_api_architecture() -> None:
         )
 
         for file in to_rename:
-            rename_file(file.path, file.new_name)
+            file_manager.rename_file(file.path, file.new_name)
 
     api_architecture = "{{ cookiecutter.api_architecture }}"
     api_choices = {
@@ -189,6 +258,42 @@ def handle_api_architecture() -> None:
     }
 
     api_choices[api_architecture]()
+
+
+def resolve_libs() -> None:
+    """
+    Собрать Docker-Compose и удалить лишние модули
+    """
+
+    libs_to_add = {
+        'postgres': '{{cookiecutter.add_postgres}}' == 'True',
+        'redis': '{{cookiecutter.add_redis}}' == 'True',
+        'kafka': '{{cookiecutter.add_kafka}}' == 'True'
+    }
+
+    for lib in libs_to_add:
+        if not libs_to_add[lib]:
+            lib_paths = getattr(ModulePaths, lib)['modules']
+            file_manager.paths_to_remove.extend(lib_paths)
+        else:
+            compose_path = getattr(ModulePaths, lib)['compose']
+            compose_merger.files_to_compose.append(compose_path)
+
+    compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
+    compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
+
+    file_manager.paths_to_remove.append(Config.template_path / "to_compose")
+
+
+def main() -> None:
+    """
+    Вызвать функции для выполнения логики пост-хука
+    """
+
+    handle_api_architecture()
+    create_poetry_dependencies()
+    resolve_libs()
+    file_manager.remove_files()
 
 
 if __name__ == '__main__':
