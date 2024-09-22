@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "{{ cookiecutter.service_name }}"
+version = "0.1.0"
+description = ""
+authors = ["gpn_team"]
+readme = "README.md"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.114.0"
+uvicorn = "^0.30.6"
+pydantic-settings = "^2.5.0"
+dependency-injector = "^4.41.0"
+strawberry-graphql = "^0.241.0"
+grpcio = "^1.66.1"
+grpcio-tools = "^1.66.1"
