@@ -160,6 +160,13 @@ class ModulePaths:
             Config.template_path / "db",
         ],
         'compose': Config.template_path / "to_compose" / "postgres.yaml"
+    },
+    redis = {
+        'modules': [
+            Config.template_path / "config" / "redis_config.py",
+            Config.template_path / "cache",
+        ],
+        'compose': Config.template_path / "to_compose" / "redis.yaml"
     }
     # TODO: Дополнять в процессе добавления библиотек
 
@@ -188,6 +195,7 @@ def resolve_libs() -> None:
 
     libs_to_add = {
         'postgres': '{{cookiecutter.add_postgres}}' == 'True',
+        'redis': '{{cookiecutter.add_redis}}' == 'True',
         # TODO: Дополнять в процессе добавления библиотек
     }
 
