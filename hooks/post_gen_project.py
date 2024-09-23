@@ -133,6 +133,10 @@ class DockerComposeMerger:
         return merged
 
     def save_merged_file(self, output_file_path: pathlib.Path) -> None:
+        """
+        Сохранить собранный yaml-файл
+        :param output_file_path: путь для сохранения
+        """
 
         def _represent_none(self, _):
             # Заменяет null на пустую строку при dump'е
