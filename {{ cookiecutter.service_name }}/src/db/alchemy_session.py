@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engin
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 # project
-from config.db_config import PostgresConfig
+from config.pg_config import PostgresConfig
 from interfaces.base_session import BaseSession
 
 
