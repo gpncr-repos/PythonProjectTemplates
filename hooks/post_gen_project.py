@@ -149,8 +149,15 @@ class DockerComposeMerger:
 
 
 class ModulePaths:
+    postgres = {
+        'modules': [
+            Config.template_path / "config" / "pg_config.py",
+            Config.template_path / "interfaces" / "base_session.py",
+            Config.template_path / "db",
+        ],
+        'compose': Config.template_path / "to_compose" / "postgres.yaml"
+    }
     # TODO: Дополнять в процессе добавления библиотек
-    ...
 
 
 poetry_creator = DependenciesCreator()
@@ -176,6 +183,7 @@ def resolve_libs() -> None:
     """
 
     libs_to_add = {
+        'postgres': '{{cookiecutter.add_postgres}}' == 'True',
         # TODO: Дополнять в процессе добавления библиотек
     }
 
