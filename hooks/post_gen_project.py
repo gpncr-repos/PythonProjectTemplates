@@ -192,8 +192,9 @@ def resolve_libs() -> None:
             lib_paths = getattr(ModulePaths, lib)['modules']
             file_manager.paths_to_remove.extend(lib_paths)
         else:
-            compose_path = getattr(ModulePaths, lib)['compose']
-            compose_merger.files_to_compose.append(compose_path)
+            if getattr(ModulePaths, lib).get('compose'):
+                compose_path = getattr(ModulePaths, lib)['compose']
+                compose_merger.files_to_compose.append(compose_path)
 
     compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
