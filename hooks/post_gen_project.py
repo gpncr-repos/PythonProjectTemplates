@@ -43,15 +43,16 @@ class DependenciesCreator:
 
                 [tool.poetry.dependencies]
                 python = "^3.11"
-                fastapi = "^0.114.0"
+                fastapi = "^0.114.0",
+                "uvicorn": "^0.30.6",
+                "pydantic-settings": "^2.5.0",
+                "dependency-injector": "^4.41.0"
             """
         )
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
         self.dependencies = {
-            "uvicorn": "^0.30.6",
-            "pydantic-settings": "^2.5.0",
-            "dependency-injector": "^4.41.0"
+            "httpx": "^0.27.2"
         }
 
     def remove_dependency(self, name: str) -> None:
@@ -150,7 +151,15 @@ class DockerComposeMerger:
 
 class ModulePaths:
     # TODO: Дополнять в процессе добавления библиотек
-    ...
+    httpx = {
+        "modules": [
+            Config.template_path / "interfaces" / "base_http_session_maker.py",
+            Config.template_path / "models" / "dto" / "http_dto.py",
+            Config.template_path / "repositories" / "http_repository.py",
+            Config.template_path / "di_containers" / "http_integration_di_container.py",
+            Config.template_path / "uows" / "http_uow.py"
+        ]
+    }
 
 
 poetry_creator = DependenciesCreator()
@@ -177,13 +186,15 @@ def resolve_libs() -> None:
 
     libs_to_add = {
         # TODO: Дополнять в процессе добавления библиотек
+        "httpx": "{{cookiecutter.add_httpx}}" == "True",
     }
 
     for lib in libs_to_add:
         if not libs_to_add[lib]:
             lib_paths = getattr(ModulePaths, lib)['modules']
             file_manager.paths_to_remove.extend(lib_paths)
-        else:
+
+        if getattr(ModulePaths, lib).get('compose'):
             compose_path = getattr(ModulePaths, lib)['compose']
             compose_merger.files_to_compose.append(compose_path)
 

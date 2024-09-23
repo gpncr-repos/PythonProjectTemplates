@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from config import app_config
 
-router = APIRouter(prefix="/", tags=["index"])
+router = APIRouter(tags=["index"])
 
 app_config = app_config.app_config
 
