@@ -43,10 +43,10 @@ class DependenciesCreator:
 
                 [tool.poetry.dependencies]
                 python = "^3.11"
-                fastapi = "^0.114.0",
-                "uvicorn": "^0.30.6",
-                "pydantic-settings": "^2.5.0",
-                "dependency-injector": "^4.41.0"
+                fastapi = "^0.114.0"
+                uvicorn = "^0.30.6"
+                pydantic-settings = "^2.5.0"
+                dependency-injector = "^4.41.0"
             """
         )
 
@@ -193,10 +193,10 @@ def resolve_libs() -> None:
         if not libs_to_add[lib]:
             lib_paths = getattr(ModulePaths, lib)['modules']
             file_manager.paths_to_remove.extend(lib_paths)
-
-        if getattr(ModulePaths, lib).get('compose'):
-            compose_path = getattr(ModulePaths, lib)['compose']
-            compose_merger.files_to_compose.append(compose_path)
+        else:
+            if getattr(ModulePaths, lib).get('compose'):
+                compose_path = getattr(ModulePaths, lib)['compose']
+                compose_merger.files_to_compose.append(compose_path)
 
     compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
