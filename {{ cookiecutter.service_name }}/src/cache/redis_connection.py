@@ -19,7 +19,7 @@ class RedisConnection:
 
     def get_connection(self) -> redis.Redis:
         """
-        Устанавливает синхронное соединение с Redis
+        Получить синхронное соединение с Redis
         :return: соединение
         """
         if not self.connection:
@@ -30,7 +30,7 @@ class RedisConnection:
         return self.connection
 
     def close_connection(self):
-        """Закрывает асинхронное соединение с Redis."""
+        """Закрыть синхронное соединение с Redis."""
         if self.connection:
             self.connection.close()
             self.connection = None
@@ -49,7 +49,7 @@ class RedisAsyncConnection:
 
     def get_connection(self) -> aioredis.Redis:
         """
-        Устанавливает асинхронное соединение с Redis
+        Получить асинхронное соединение с Redis
         :return: соединение
         """
         if not self.connection:
@@ -60,7 +60,7 @@ class RedisAsyncConnection:
         return self.connection
 
     async def close_connection(self):
-        """Закрывает асинхронное соединение с Redis."""
+        """Закрыть асинхронное соединение с Redis."""
         if self.connection:
             await self.connection.close()
             self.connection = None
