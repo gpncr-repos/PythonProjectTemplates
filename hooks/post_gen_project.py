@@ -165,6 +165,8 @@ class ModulePaths:
     redis = {
         'modules': [
             Config.template_path / "config" / "redis_config.py",
+            Config.template_path / "repositories" / "cache_repository.py",
+            Config.template_path / "tools" / "di_containers" / "cache_container.py",
             Config.template_path / "cache",
         ],
         'compose': Config.template_path / "to_compose" / "redis.yaml"
