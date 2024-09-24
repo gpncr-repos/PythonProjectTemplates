@@ -1,4 +1,5 @@
 # thirdparty
+import redis
 from redis import asyncio as aioredis
 
 # project
@@ -6,44 +7,59 @@ from config.redis_config import RedisConfig
 
 
 class RedisConnection:
+
     def __init__(self, config: RedisConfig):
         """
-        Инициализация асинхронного подключения к Redis.
+        Инициализация синхронного подключения к Redis.
 
-        :param redis_dsn:
+        :param config: Конфиг Redis
         """
         self.dsn = config.dsn
         self.connection = None
 
-    async def connect(self):
-        """Устанавливает асинхронное соединение с Redis."""
-        try:
-            self.connection = await aioredis.from_url(self.dsn)
-        except Exception as e:
-            raise e
-
-    async def set(self, key, value):
-        """Сохраняет значение по ключу в Redis."""
-        if self.connection:
+    def get_connection(self) -> redis.Redis:
+        """
+        Устанавливает синхронное соединение с Redis
+        :return: соединение
+        """
+        if not self.connection:
             try:
-                await self.connection.set(key, value)
+                self.connection = redis.from_url(self.dsn)
+            except redis.ConnectionError as e:
+                raise e
+        return self.connection
+
+    def close_connection(self):
+        """Закрывает асинхронное соединение с Redis."""
+        if self.connection:
+            self.connection.close()
+            self.connection = None
+
+
+class RedisAsyncConnection:
+
+    def __init__(self, config: RedisConfig):
+        """
+        Инициализация асинхронного подключения к Redis.
+
+        :param config: Конфиг Redis
+        """
+        self.dsn = config.dsn
+        self.connection = None
+
+    async def get_connection(self) -> aioredis.Redis:
+        """
+        Устанавливает асинхронное соединение с Redis
+        :return: соединение
+        """
+        if not self.connection:
+            try:
+                self.connection = await aioredis.from_url(self.dsn)
             except Exception as e:
                 raise e
-        else:
-            raise ConnectionError("Соединение с Redis не установлено.")
+        return self.connection
 
-    async def get(self, key):
-        """Получает значение по ключу из Redis."""
-        if self.connection:
-            try:
-                value = await self.connection.get(key)
-                return value
-            except Exception as e:
-                raise e
-        else:
-            raise ConnectionError("Соединение с Redis не установлено.")
-
-    async def close(self):
+    async def close_connection(self):
         """Закрывает асинхронное соединение с Redis."""
         if self.connection:
             await self.connection.close()

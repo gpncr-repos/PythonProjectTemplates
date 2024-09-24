@@ -51,7 +51,8 @@ class DependenciesCreator:
         self.dependencies = {
             "uvicorn": "^0.30.6",
             "pydantic-settings": "^2.5.0",
-            "dependency-injector": "^4.41.0"
+            "dependency-injector": "^4.41.0",
+            "redis": "^5.0.0"
         }
 
     def remove_dependency(self, name: str) -> None:
