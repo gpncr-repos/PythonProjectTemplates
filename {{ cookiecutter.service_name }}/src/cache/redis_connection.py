@@ -47,14 +47,14 @@ class RedisAsyncConnection:
         self.dsn = config.dsn
         self.connection = None
 
-    async def get_connection(self) -> aioredis.Redis:
+    def get_connection(self) -> aioredis.Redis:
         """
         Устанавливает асинхронное соединение с Redis
         :return: соединение
         """
         if not self.connection:
             try:
-                self.connection = await aioredis.from_url(self.dsn)
+                self.connection = aioredis.from_url(self.dsn)
             except Exception as e:
                 raise e
         return self.connection
