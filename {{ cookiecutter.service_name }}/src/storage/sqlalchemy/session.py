@@ -1,5 +1,5 @@
 # stdlib
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from functools import cached_property
 
 # thirdparty
@@ -21,6 +21,7 @@ class SqlAlchemySync(BaseSession):
         session_factory = sessionmaker(bind=self._build_engine(), autocommit=False, autoflush=False)
         return scoped_session(session_factory)
 
+    @contextmanager
     def get_db(self):
         db = self.Session()
         try:

@@ -149,6 +149,10 @@ class DockerComposeMerger:
 
 
 class ModulePaths:
+    """
+    Содержит поля с именем в виде названия библиотеки, и значением в виде словаря с путями до зависимых модулей и
+    docker-comopse файла
+    """
     postgres = {
         'modules': [
             Config.template_path / "config" / "pg_config.py",
