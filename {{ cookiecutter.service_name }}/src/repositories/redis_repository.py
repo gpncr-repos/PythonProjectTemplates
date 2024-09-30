@@ -2,7 +2,7 @@
 import redis
 
 # project
-from cache import redis_connection
+from storage.redis import redis_connection
 from interfaces.base_repository import BaseRepository
 
 

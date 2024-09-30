@@ -14,26 +14,18 @@ class RedisConnection:
 
         :param config: Конфиг Redis
         """
-        self.dsn = config.dsn
-        self.connection = None
+        self.connection = redis.from_url(config.dsn)
 
-    def get_connection(self) -> redis.Redis:
+    def get_connection(self) -> aioredis.Redis:
         """
-        Получить синхронное соединение с Redis
+        Получить асинхронное соединение с Redis
         :return: соединение
         """
-        if not self.connection:
-            try:
-                self.connection = redis.from_url(self.dsn)
-            except redis.ConnectionError as e:
-                raise e
         return self.connection
 
     def close_connection(self):
         """Закрыть синхронное соединение с Redis."""
-        if self.connection:
-            self.connection.close()
-            self.connection = None
+        self.connection.close()
 
 
 class RedisAsyncConnection:
@@ -44,23 +36,15 @@ class RedisAsyncConnection:
 
         :param config: Конфиг Redis
         """
-        self.dsn = config.dsn
-        self.connection = None
+        self.connection = aioredis.from_url(config.dsn)
 
     def get_connection(self) -> aioredis.Redis:
         """
         Получить асинхронное соединение с Redis
         :return: соединение
         """
-        if not self.connection:
-            try:
-                self.connection = aioredis.from_url(self.dsn)
-            except Exception as e:
-                raise e
         return self.connection
 
     async def close_connection(self):
         """Закрыть асинхронное соединение с Redis."""
-        if self.connection:
-            await self.connection.close()
-            self.connection = None
+        await self.connection.close()
