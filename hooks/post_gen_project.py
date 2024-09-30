@@ -149,8 +149,19 @@ class DockerComposeMerger:
 
 
 class ModulePaths:
+    """
+    Содержит поля с именем в виде названия библиотеки, и значением в виде словаря с путями до зависимых модулей и
+    docker-comopse файла
+    """
+    postgres = {
+        'modules': [
+            Config.template_path / "config" / "pg_config.py",
+            Config.template_path / "interfaces" / "base_session.py",
+            Config.template_path / "db",
+        ],
+        'compose': Config.template_path / "to_compose" / "postgres.yaml"
+    }
     # TODO: Дополнять в процессе добавления библиотек
-    ...
 
 
 poetry_creator = DependenciesCreator()
@@ -176,6 +187,7 @@ def resolve_libs() -> None:
     """
 
     libs_to_add = {
+        'postgres': '{{cookiecutter.add_postgres}}' == 'True',
         # TODO: Дополнять в процессе добавления библиотек
     }
 
@@ -184,8 +196,9 @@ def resolve_libs() -> None:
             lib_paths = getattr(ModulePaths, lib)['modules']
             file_manager.paths_to_remove.extend(lib_paths)
         else:
-            compose_path = getattr(ModulePaths, lib)['compose']
-            compose_merger.files_to_compose.append(compose_path)
+            compose_path = getattr(ModulePaths, lib).get('compose')
+            if compose_path:
+                compose_merger.files_to_compose.append(compose_path)
 
     compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
