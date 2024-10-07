@@ -44,14 +44,15 @@ class DependenciesCreator:
                 [tool.poetry.dependencies]
                 python = "^3.11"
                 fastapi = "^0.114.0"
+                uvicorn = "^0.30.6"
+                pydantic-settings = "^2.5.0"
+                dependency-injector = "^4.41.0"
             """
         )
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
         self.dependencies = {
-            "uvicorn": "^0.30.6",
-            "pydantic-settings": "^2.5.0",
-            "dependency-injector": "^4.41.0"
+            "aio-pika": "^9.4.3"
         }
 
     def remove_dependency(self, name: str) -> None:
@@ -161,6 +162,17 @@ class ModulePaths:
         ],
         'compose': Config.template_path / "to_compose" / "postgres.yaml"
     }
+    rabbitmq = {
+        'modules': [
+            Config.template_path / "brokers" / "rabbitmq" / "connections_manager.py",
+            Config.template_path / "brokers" / "rabbitmq" / "consumer.py",
+            Config.template_path / "brokers" / "rabbitmq" / "producer.py",
+            Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
+            Config.template_path / "config" / "rabbitmq_config.py",
+            Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py"
+        ],
+        'compose': Config.template_path / "to_compose" / "rabbitmq.yaml"
+    }
     # TODO: Дополнять в процессе добавления библиотек
 
 
@@ -188,6 +200,7 @@ def resolve_libs() -> None:
 
     libs_to_add = {
         'postgres': '{{cookiecutter.add_postgres}}' == 'True',
+        'rabbitmq': '{{cookiecutter.add_rabbitmq}}' == 'True',
         # TODO: Дополнять в процессе добавления библиотек
     }
 
