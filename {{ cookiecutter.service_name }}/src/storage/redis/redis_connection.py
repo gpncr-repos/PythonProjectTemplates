@@ -14,11 +14,11 @@ class RedisConnection:
 
         :param config: Конфиг Redis
         """
-        self.connection = redis.from_url(config.dsn)
+        self.connection = redis.from_url(config.db_dsn)
 
-    def get_connection(self) -> aioredis.Redis:
+    def get_connection(self) -> redis.Redis:
         """
-        Получить асинхронное соединение с Redis
+        Получить синхронное соединение с Redis
         :return: соединение
         """
         return self.connection
@@ -36,7 +36,7 @@ class RedisAsyncConnection:
 
         :param config: Конфиг Redis
         """
-        self.connection = aioredis.from_url(config.dsn)
+        self.connection = aioredis.from_url(config.db_dsn)
 
     def get_connection(self) -> aioredis.Redis:
         """
@@ -47,4 +47,4 @@ class RedisAsyncConnection:
 
     async def close_connection(self):
         """Закрыть асинхронное соединение с Redis."""
-        await self.connection.close()
+        await self.connection.aclose()
