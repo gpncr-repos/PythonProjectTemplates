@@ -161,7 +161,7 @@ class ModulePaths:
             Config.template_path / "db",
         ],
         'compose': Config.template_path / "to_compose" / "postgres.yaml"
-    },
+    }
     redis = {
         'modules': [
             Config.template_path / "config" / "redis_config.py",

@@ -13,31 +13,25 @@ class RedisConfig(BaseSettings):
     Класс настроек для Redis
     """
 
-    user: str = Field(alias="REDIS_USER", description="Имя пользователя Redis")
-    password: str = Field(alias="REDIS_PASSWORD", description="Пароль пользователя Redis")
     host: str = Field(alias="REDIS_HOST", description="Хост подключения к Redis")
     port: int = Field(6379, alias="REDIS_PORT", description="Порт подключения к Redis")
+    password: str = Field(alias="REDIS_PASSWORD", description="Пароль Redis")
     db_id: str = Field(alias="REDIS_DB", description="Идентификатор БД Redis")
     broker_id: str = Field(alias="REDIS_BROKER", description="Идентификатор брокера Redis")
 
-    @property
-    def db_dsn(self) -> RedisDsn:
+    def _build_dsn(self, path: str):
         return RedisDsn.build(
             scheme="redis",
-            username=self.user,
             host=self.host,
             port=self.port,
             password=self.password,
-            path=self.db_id,
+            path=path,
         )
 
     @property
+    def db_dsn(self) -> RedisDsn:
+        return self._build_dsn(self.db_id)
+
+    @property
     def broker_dsn(self) -> RedisDsn:
-        return RedisDsn.build(
-            scheme="redis",
-            username=self.user,
-            host=self.host,
-            port=self.port,
-            password=self.password,
-            path=self.broker_id,
-        )
+        return self._build_dsn(self.broker_id)
