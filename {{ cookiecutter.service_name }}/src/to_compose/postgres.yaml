@@ -2,7 +2,7 @@ version: '3'
 
 services:
   {{cookiecutter.service_name}}.postgres:
-    image: #pg_image_path
+    image: postgres:latest
     hostname: {{cookiecutter.service_name}}.postgres
     container_name: {{cookiecutter.service_name}}.postgres
     ports:
