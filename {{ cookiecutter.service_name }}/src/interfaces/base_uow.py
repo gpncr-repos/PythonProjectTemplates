@@ -7,16 +7,14 @@ from interfaces import base_repository
 
 class BaseSyncUOW(abc.ABC):
     """
-    Абстрактный класс синхронного UOW для работы с синхронными репозиториями
+    Абстрактный класс синхронного UOW
     """
 
-    def __init__(self, repository: base_repository.BaseRepository) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """
         Инициализировать переменные
-        :param repository: объект репозитория
         """
-
-        self.repository = repository
+        ...
 
     def __enter__(self, *args, **kwargs) -> BaseSyncUOW:
         """
@@ -51,7 +49,7 @@ class BaseSyncUOW(abc.ABC):
 
 class BaseAsyncUOW(BaseSyncUOW):
     """
-    Абстрактный класс асинхронного UOW для работы с асинхронными репозиториями
+    Абстрактный класс асинхронного UOW
     """
 
     async def __aenter__(self, *args, **kwargs) -> BaseAsyncUOW:
