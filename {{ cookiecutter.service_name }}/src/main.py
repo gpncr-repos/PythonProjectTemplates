@@ -3,6 +3,7 @@ import uvicorn
 
 from config import app_config
 from config import uvicorn_config
+from web.middlewares import logger_middleware
 from web.tools import router_registrator
 
 app_config = app_config.app_config
@@ -25,6 +26,9 @@ def create_app() -> fastapi.FastAPI:
 
 app = create_app()
 router_registrator.register_routers(app)
+
+app.add_middleware(logger_middleware.LogRequestInfoMiddleware)
+app.add_middleware(logger_middleware.SetRequestContextMiddleware)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", **uvicorn_config.uvicorn_config)
