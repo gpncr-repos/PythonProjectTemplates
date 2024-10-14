@@ -216,6 +216,8 @@ def resolve_libs() -> None:
 
     file_manager.paths_to_remove.append(Config.template_path / "to_compose")
 
+def rename_env_example():
+    file_manager.rename_file(Config.template_path / ".env.example", ".env")
 
 def main() -> None:
     """
@@ -225,6 +227,7 @@ def main() -> None:
     create_poetry_dependencies()
     resolve_libs()
     file_manager.remove_files()
+    rename_env_example()
 
 
 if __name__ == '__main__':
