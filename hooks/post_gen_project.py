@@ -51,7 +51,8 @@ class DependenciesCreator:
         self.dependencies = {
             "uvicorn": "^0.30.6",
             "pydantic-settings": "^2.5.0",
-            "dependency-injector": "^4.41.0"
+            "dependency-injector": "^4.41.0",
+            "redis": "^5.0.0"
         }
 
     def remove_dependency(self, name: str) -> None:
@@ -161,6 +162,15 @@ class ModulePaths:
         ],
         'compose': Config.template_path / "to_compose" / "postgres.yaml"
     }
+    redis = {
+        'modules': [
+            Config.template_path / "config" / "redis_config.py",
+            Config.template_path / "repositories" / "cache_repository.py",
+            Config.template_path / "tools" / "di_containers" / "cache_container.py",
+            Config.template_path / "cache",
+        ],
+        'compose': Config.template_path / "to_compose" / "redis.yaml"
+    }
     # TODO: Дополнять в процессе добавления библиотек
 
 
@@ -188,6 +198,7 @@ def resolve_libs() -> None:
 
     libs_to_add = {
         'postgres': '{{cookiecutter.add_postgres}}' == 'True',
+        'redis': '{{cookiecutter.add_redis}}' == 'True',
         # TODO: Дополнять в процессе добавления библиотек
     }
 
