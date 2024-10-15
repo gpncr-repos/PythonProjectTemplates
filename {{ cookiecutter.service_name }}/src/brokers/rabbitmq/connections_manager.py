@@ -12,6 +12,7 @@ class InstanceConnectionBase(base_proxy.ConnectionProxy):
     """
 
     _connection: aio_pika.abc.AbstractRobustConnection | None = None
+    _connection_users_count: int = 0
 
     @classmethod
     async def _set_connection(cls) -> None:
@@ -21,10 +22,20 @@ class InstanceConnectionBase(base_proxy.ConnectionProxy):
 
         cls._connection = await aio_pika.connect_robust(str(config.rabbit_mq_dsn))
 
+    @classmethod
+    def _set_connection_users_count(cls, new_count: int) -> None:
+        """
+        Установить число объектов, которые используют соединение
+        """
+
+        cls._connection_users_count = new_count
+
     async def get_connection(self) -> aio_pika.abc.AbstractRobustConnection:
         """
         Получить соединение
         """
+
+        self._set_connection_users_count(self._connection_users_count + 1)
 
         if self._connection is None:
             await self._set_connection()
@@ -38,7 +49,11 @@ class InstanceConnectionBase(base_proxy.ConnectionProxy):
 
         if self._connection is None:
             raise ValueError("Объект соединения не инициализирован")
-        else:
+
+        if self._connection_users_count > 0:
+            self._set_connection_users_count(self._connection_users_count - 1)
+
+        if self._connection_users_count == 0:
             await self._connection.close()
 
 

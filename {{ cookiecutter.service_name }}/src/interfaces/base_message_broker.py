@@ -11,18 +11,6 @@ class BaseProducer(ABC):
 
         raise NotImplementedError
 
-    @abstractmethod
-    async def start(self, *args, **kwargs):
-        """Запустить асинхронный producer."""
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def stop(self, *args, **kwargs):
-        """Остановить асинхронный producer."""
-
-        raise NotImplementedError
-
 
 class BaseConsumer(ABC):
     """Базовый интерфейс для асинхронного consumer'а."""
@@ -30,17 +18,5 @@ class BaseConsumer(ABC):
     @abstractmethod
     async def consume(self, *args, **kwargs):
         """Consume метод."""
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def start(self, *args, **kwargs):
-        """Запустить асинхронный consumer."""
-
-        raise NotImplementedError
-
-    @abstractmethod
-    async def stop(self, *args, **kwargs):
-        """Остановить асинхронный consumer."""
 
         raise NotImplementedError

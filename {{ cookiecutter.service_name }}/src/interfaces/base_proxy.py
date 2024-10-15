@@ -9,7 +9,7 @@ class ConnectionProxy(abc.ABC):
     """
 
     @abc.abstractmethod
-    def get_connection(self) -> any:
+    async def get_connection(self) -> any:
         """
         Получить объект соединения
         """
@@ -17,7 +17,7 @@ class ConnectionProxy(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def close_connection(self) -> None:
+    async def close_connection(self) -> None:
         """
         Закрыть соединение
         """
