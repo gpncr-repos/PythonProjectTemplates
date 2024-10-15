@@ -11,7 +11,7 @@ class BaseRoutingBuilder(abc.ABC):
 
     async def declare_exchange(
         self,
-        channel: aio_pika.RobustChannel,
+        channel: aio_pika.abc.AbstractRobustChannel,
         name: str,
         type_: aio_pika.ExchangeType,
         *args,
@@ -27,7 +27,13 @@ class BaseRoutingBuilder(abc.ABC):
 
         return await channel.declare_exchange(name, type_, *args, **kwargs)
 
-    async def declare_queue(self, channel: aio_pika.RobustChannel, name: str) -> aio_pika.abc.AbstractRobustQueue:
+    async def declare_queue(
+        self,
+        channel: aio_pika.abc.AbstractRobustChannel,
+        name: str,
+        *args,
+        **kwargs
+    ) -> aio_pika.abc.AbstractRobustQueue:
         """
         Объявить обменник сообщениями
         :param channel: объект канала
@@ -35,7 +41,7 @@ class BaseRoutingBuilder(abc.ABC):
         :return: объект очереди
         """
 
-        return await channel.declare_queue(name)
+        return await channel.declare_queue(name, *args, **kwargs)
 
     async def bind_queue_to_exchange(
         self,
@@ -72,14 +78,11 @@ class BaseRoutingBuilder(abc.ABC):
         await exchange.bind(exchange_to_bind, routing_key, *args, **kwargs)
 
 
-class BaseRoutingConfiguratorMixin(abc.ABC):
+class BaseRoutingConfigurator(abc.ABC):
     """
-    Базовый класc-миксин конфигуратора маршрутизации сообщений для RabbitMQ, реализующий паттерн Builder.
-    Является объектом Director.
-    Поле _channel должно быть инициализировано в наследуемом классе
+    Базовый класс конфигуратора маршрутизации сообщений для RabbitMQ, реализующий паттерн Builder.
+    Является объектом Director
     """
-
-    _channel: aio_pika.RobustChannel
 
     def __init__(self, builder: BaseRoutingBuilder) -> None:
         """
@@ -88,13 +91,48 @@ class BaseRoutingConfiguratorMixin(abc.ABC):
         """
 
         self._builder = builder
-        self._exchanges: dict[str, aio_pika.abc.AbstractRobustExchange] = {}
-        self._queues: dict[str, aio_pika.abc.AbstractRobustQueue] = {}
+        self.exchanges: dict[str, aio_pika.abc.AbstractRobustExchange] = {}
+        self.queues: dict[str, aio_pika.abc.AbstractRobustQueue] = {}
+
+    async def get_exchange(
+        self,
+        name: str,
+        channel: aio_pika.abc.AbstractRobustChannel
+    ) -> aio_pika.abc.AbstractExchange:
+        """
+        Получить объект обменника сообщений по его названию
+        :param name: название обменника сообщениями
+        :param channel: объект канала
+        :return: объект обменника сообщениями
+        """
+
+        if name not in self.exchanges:
+            raise ValueError("Обменник сообщений с таким именем не зарегистрирован")
+
+        return await channel.get_exchange(name)
+
+    async def get_queue(
+        self,
+        name: str,
+        channel: aio_pika.abc.AbstractRobustChannel
+    ) -> aio_pika.abc.AbstractQueue:
+        """
+        Получить объект очереди по ее названию
+        :param name: название очереди
+        :param channel: объект канала
+        :return: объект очереди
+        """
+
+        if name not in self.queues:
+            raise ValueError("Очередь с таким именем не зарегистрирована")
+
+        return await channel.get_queue(name)
 
     @abc.abstractmethod
-    async def configure_routes(self, *args, **kwargs) -> None:
+    async def configure_routes(self, channel: aio_pika.abc.AbstractRobustChannel, *args, **kwargs) -> None:
         """
         Сконфигурировать маршрутизацию сообщений
+        :param channel: объект канала
         """
 
         raise NotImplementedError
