@@ -52,7 +52,6 @@ class DependenciesCreator:
             "uvicorn": "^0.30.6",
             "pydantic-settings": "^2.5.0",
             "dependency-injector": "^4.41.0",
-            "redis": "^5.0.0"
         }
 
     def remove_dependency(self, name: str) -> None:
@@ -65,6 +64,14 @@ class DependenciesCreator:
             raise ValueError("Зависимость не была найдена в словаре зависимостей")
 
         del self.dependencies[name]
+
+    def add_dependency(self, dep: dict[str, str]) -> None:
+        """
+        Добавить зависимость в словарь зависимостей
+        :param dep: словарь с именем и версией зависимости
+        """
+
+        self.dependencies.update(dep)
 
     def create_pyproject(self) -> str:
         final_dependencies = [
@@ -149,27 +156,35 @@ class DockerComposeMerger:
             yaml.dump(merged_data, f, sort_keys=False)
 
 
-class ModulePaths:
+class LibsConfig:
     """
     Содержит поля с именем в виде названия библиотеки, и значением в виде словаря с путями до зависимых модулей и
-    docker-comopse файла
+    docker-compose файла, а также необходимыми зависимостями
     """
     postgres = {
         'modules': [
             Config.template_path / "config" / "pg_config.py",
-            Config.template_path / "interfaces" / "base_session.py",
-            Config.template_path / "db",
+            Config.template_path / "storage" / "sqlalchemy",
         ],
-        'compose': Config.template_path / "to_compose" / "postgres.yaml"
+        'compose': Config.template_path / "to_compose" / "postgres.yaml",
+        'dependencies': {
+            "asyncpg": "^0.29.0",
+            "psycopg2": "^2.9.0",
+            "sqlalchemy": "^2.0.0",
+            "alembic": "^1.13.0",
+        }
     }
     redis = {
         'modules': [
             Config.template_path / "config" / "redis_config.py",
-            Config.template_path / "repositories" / "cache_repository.py",
-            Config.template_path / "tools" / "di_containers" / "cache_container.py",
-            Config.template_path / "cache",
+            Config.template_path / "repositories" / "redis_repository.py",
+            Config.template_path / "tools" / "di_containers" / "redis_container.py",
+            Config.template_path / "storage" / "redis",
         ],
-        'compose': Config.template_path / "to_compose" / "redis.yaml"
+        'compose': Config.template_path / "to_compose" / "redis.yaml",
+        'dependencies': {
+            "redis": "^5.0.0",
+        }
     }
     # TODO: Дополнять в процессе добавления библиотек
 
@@ -204,12 +219,14 @@ def resolve_libs() -> None:
 
     for lib in libs_to_add:
         if not libs_to_add[lib]:
-            lib_paths = getattr(ModulePaths, lib)['modules']
+            lib_paths = getattr(LibsConfig, lib)['modules']
             file_manager.paths_to_remove.extend(lib_paths)
         else:
-            compose_path = getattr(ModulePaths, lib).get('compose')
+            compose_path = getattr(LibsConfig, lib).get('compose')
             if compose_path:
                 compose_merger.files_to_compose.append(compose_path)
+            dependencies = getattr(LibsConfig, lib)['dependencies']
+            poetry_creator.add_dependency(dependencies)
 
     compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
@@ -224,8 +241,8 @@ def main() -> None:
     Вызвать функции для выполнения логики пост-хука
     """
 
-    create_poetry_dependencies()
     resolve_libs()
+    create_poetry_dependencies()
     file_manager.remove_files()
     rename_env_example()
 
