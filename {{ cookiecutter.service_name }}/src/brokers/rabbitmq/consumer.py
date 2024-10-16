@@ -76,3 +76,10 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
             )
         except json.JSONDecodeError:
             raise
+
+    async def stop(self) -> None:
+        """
+        Остановить продюсер
+        """
+
+        await self._connection_proxy.close_connection()
