@@ -46,6 +46,12 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         """
 
         await self._channel.close()
+
+    async def stop(self) -> None:
+        """
+        Остановить продюсер
+        """
+
         await self._connection_proxy.close_connection()
 
     async def produce(

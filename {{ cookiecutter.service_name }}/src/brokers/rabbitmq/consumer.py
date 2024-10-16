@@ -16,12 +16,14 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
     def __init__(
         self,
         connection_proxy: base_proxy.ConnectionProxy,
-        router: base_configurator.BaseRoutingConfigurator
+        router: base_configurator.BaseRoutingConfigurator,
+        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Инициализировать переменные
         :param connection_proxy: прокси-объект соединения
         :param router: конфигуратор маршрутизации сообщений
+        :param model_type: допустимый тип сообщения
         """
 
         self._connection_proxy = connection_proxy
@@ -29,10 +31,16 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         self._routing_configurator = router
         self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = asyncio.Queue()
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
+        self._model_type = model_type
 
-    async def __aenter__(self, prefetch_count: int = 1) -> RabbitMQConsumer:
+    async def __aenter__(
+        self,
+        queue_name=config.queue,
+        prefetch_count: int = 1
+    ) -> RabbitMQConsumer:
         """
         Войти в контекстный менеджер
+        :param queue_name: название очереди
         :param prefetch_count: количество сообщений, посылаемое брокером, за раз
         :return: объект продюсера
         """
@@ -43,7 +51,7 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         await self._routing_configurator.configure_routes(self._channel)
         await self._channel.set_qos(prefetch_count=prefetch_count)
 
-        await self._routing_configurator.queues[config.queue].consume(self._queue.put)
+        await self._routing_configurator.queues[queue_name].consume(self._queue.put)
 
         return self
 
@@ -55,10 +63,9 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         await self._channel.close()
         await self._connection_proxy.close_connection()
 
-    async def consume(self, queue: str) -> broker_message_dto.BrokerMessageDTO:
+    async def consume(self) -> broker_message_dto.BrokerMessageDTO:
         """
         Прочитать сообщение из очереди
-        :param queue: название очереди
         """
 
         if self._connection is None:
@@ -69,10 +76,13 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
 
         try:
             decoded = json.loads(message.body)
-            return broker_message_dto.BrokerMessageDTO(
-                id=decoded["id"],
-                body=decoded["body"],
-                date=decoded["date"]
-            )
+            return self._model_type(**decoded)
         except json.JSONDecodeError:
             raise
+
+    async def stop(self) -> None:
+        """
+        Остановить продюсер
+        """
+
+        await self._connection_proxy.close_connection()
