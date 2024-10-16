@@ -28,6 +28,6 @@ class ConsumerContainer(containers.DeclarativeContainer):
     connection = providers.Factory(connections_manager.ConsumerConnection)
     routing_builder = providers.Factory(routing_configurator.RoutingBuilder)
     routing_configurator = providers.Factory(routing_configurator.RoutingConfigurator, routing_builder)
-    producer = providers.Factory(
+    consumer = providers.Factory(
         consumer.RabbitMQConsumer, connection, routing_configurator
     )
