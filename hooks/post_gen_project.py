@@ -44,14 +44,15 @@ class DependenciesCreator:
                 [tool.poetry.dependencies]
                 python = "^3.11"
                 fastapi = "^0.114.0"
+                uvicorn = "^0.30.6"
+                pydantic-settings = "^2.5.0"
+                dependency-injector = "^4.41.0"
+                pre-commit = "^4.0.1"
             """
         )
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
         self.dependencies = {
-            "uvicorn": "^0.30.6",
-            "pydantic-settings": "^2.5.0",
-            "dependency-injector": "^4.41.0",
         }
 
     def remove_dependency(self, name: str) -> None:
