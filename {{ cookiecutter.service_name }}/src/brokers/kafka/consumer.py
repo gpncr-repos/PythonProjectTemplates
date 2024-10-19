@@ -1,52 +1,82 @@
+from __future__ import annotations  # no qa
+
 # stdlib
 import json
 import logging
-from typing import TypeVar
 
 # thirdparty
 from aiokafka import AIOKafkaConsumer
 from aiokafka.errors import KafkaError
-from pydantic import BaseModel, KafkaDsn, ValidationError
+from pydantic import KafkaDsn, ValidationError
 
 
 # project
-from interfaces.base_message_broker.consumer import BaseConsumer
-
-
-ConsumeModel = TypeVar("ConsumeModel", bound=BaseModel)
+from config import kafka_config
+from interfaces import base_message_broker
+from models.dto import broker_message_dto
 
 logger = logging.getLogger(__name__)
+config = kafka_config.config
 
 
-class KafkaConsumer(BaseConsumer):
-    """Асинхронный Kafka consumer."""
+class KafkaConsumer(base_message_broker.BaseConsumer):
+    """
+    Класс Kafka consumer
+    """
 
-    def __init__(self, dsn: KafkaDsn, topic: str) -> None:
-        """Инициализация Kafka consumer'а."""
+    def __init__(
+        self,
+        dsn: KafkaDsn = config.kafka_dsn,
+        topics: str = config.topic,
+        group_id: str | None = None,
+        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO
+    ) -> None:
+        """
+        Инициализировать переменные
+        :param dsn: kafka dsn
+        :param topics: список названий топиков
+        :param group_id: идентификатор группы консюмеров
+        :param model_type: допустимый тип сообщения
+        """
 
-        self.consumer: AIOKafkaConsumer = AIOKafkaConsumer(
-            topic, bootstrap_servers=dsn.unicode_string().removeprefix("kafka://")
+        self._consumer = AIOKafkaConsumer(
+            *topics, bootstrap_servers=str(dsn).removeprefix(config.scheme), group_id=group_id
         )
+        self._model_type = model_type
 
-    async def consume(self, model: type[ConsumeModel]) -> ConsumeModel:
-        """Consume метод Kafka."""
+    async def __aenter__(self) -> KafkaConsumer:
+        """
+        Войти в контекстный менеджер
+        :return: объект консюмера
+        """
+
+        await self._consumer.start()
+
+        return self
+
+    async def __aexit__(self, *args, **kwargs) -> None:
+        """
+        Выйти из контекстного менеджера
+        """
+
+        pass
+
+    async def consume(self) -> broker_message_dto.BrokerMessageDTO:
+        """
+        Прочитать сообщение из Kafka
+        """
 
         try:
-            message = await self.consumer.getone()
+            message = await self._consumer.getone()
             payload = json.loads(message.value.decode("utf-8"))
-            result = model(**payload)
+            result = self._model_type(**payload)
         except (ValidationError, KafkaError) as e:
             logger.exception("Не удалось обработать сообщение из kafka")
             raise e
 
         return result
 
-    async def start(self) -> None:
-        """Запустить Kafka consumer."""
-
-        await self.consumer.start()
-
     async def stop(self) -> None:
         """Остановить Kafka consumer."""
 
-        await self.consumer.stop()
+        await self._consumer.stop()
