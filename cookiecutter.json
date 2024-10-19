@@ -7,5 +7,6 @@
   "okd_stage": ["DEV", "PROD"],
   "async_fastapi": ["auto", "wsgi"],
   "add_postgres": false,
-  "add_redis": false
+  "add_redis": false,
+  "add_kafka": false
 }

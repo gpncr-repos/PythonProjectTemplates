@@ -187,6 +187,20 @@ class LibsConfig:
             "redis": "^5.0.0",
         }
     }
+    kafka = {
+        "modules": [
+            Config.template_path / "config" / "kafka_config.py",
+            Config.template_path / "interfaces" / "base_message_broker.py",
+            Config.template_path / "brokers" / "kafka" / "consumer.py",
+            Config.template_path / "brokers" / "kafka" / "producer.py",
+            Config.template_path / "models" / "broker_message_dto.py",
+            Config.template_path / "tools" / "di_containers" / "kafka_di_container.py"
+        ],
+        'compose': Config.template_path / "to_compose" / "kafka.yaml",
+        'dependencies': {
+            "aiokafka": "^0.11.0"
+        }
+    }
     # TODO: Дополнять в процессе добавления библиотек
 
 
@@ -215,6 +229,7 @@ def resolve_libs() -> None:
     libs_to_add = {
         'postgres': '{{cookiecutter.add_postgres}}' == 'True',
         'redis': '{{cookiecutter.add_redis}}' == 'True',
+        'kafka': '{{cookiecutter.add_kafka}}' == 'True'
         # TODO: Дополнять в процессе добавления библиотек
     }
 
