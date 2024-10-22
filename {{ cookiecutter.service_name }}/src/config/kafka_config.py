@@ -15,7 +15,10 @@ class KafkaConfig(BaseSettings):
     port: str = Field(description="Порт Kafka", default="29092", alias="KAFKA_PORT")
     scheme: str = Field(description="Протокол", default="kafka", alias="KAFKA_SCHEME")
 
+    # Добавить название топика как поле класса
     topic: str = Field(description="Название топика", default="")
+
+    # Добавить название группы как поле класса
     group: str = Field(description="Название группы консюмеров", default="")
 
     @computed_field
