@@ -8,7 +8,8 @@ class ProducerContainer(containers.DeclarativeContainer):
     DI-контейнер с провадйерами для продюсера
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    # указать модули, с которыми будет связан di-контейнер
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     producer = providers.Factory(producer.KafkaProducer)
 
@@ -18,6 +19,7 @@ class ConsumerContainer(containers.DeclarativeContainer):
     DI-контейнер с провадйерами для консюмера
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    # указать модули, с которыми будет связан di-контейнер
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     consumer = providers.Factory(consumer.KafkaConsumer)
