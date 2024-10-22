@@ -32,11 +32,9 @@ repos:
     hooks:
       - id: flake8
         args: [--max-line-length=100, --ignore=E203]
-  - repo: local
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.6.0
     hooks:
-      - id: commit-msg
-        name: commit-msg-hook
-        description: Check commit message format
-        entry: python ./ci/local/custom_pre_commit_hooks/custom_pre_commit_hooks/commit_msg_hook.py
-        language: python
-        stages: [commit-msg]
+      - id: conventional-pre-commit
+        stages: [ commit-msg ]
+        args: [ --strict, --force-scope, --verbose, --no-color, feat, fix, chore, test, build, docs, perf, refactor ]
