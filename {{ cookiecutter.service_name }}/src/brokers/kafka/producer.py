@@ -2,6 +2,7 @@ from __future__ import annotations  # no qa
 
 # stdlib
 import logging
+from contextlib import asynccontextmanager
 
 # thirdparty
 from aiokafka import AIOKafkaProducer
@@ -17,9 +18,9 @@ logger = logging.getLogger(__name__)
 config = kafka_config.config
 
 
-class KafkaProducer(base_message_broker.BaseProducer):
+class KafkaProducerAsync(base_message_broker.BaseProducer):
     """
-    Класс Kafka producer
+    Класс Kafka producer, реализованный с помощью aiokafka
     """
 
     def __init__(
@@ -35,48 +36,46 @@ class KafkaProducer(base_message_broker.BaseProducer):
         :param model_type: тип сообщения
         """
 
-        self._producer = AIOKafkaProducer(
-            bootstrap_servers=str(dsn).removeprefix(config.scheme)
-        )
+        self._producer: AIOKafkaProducer | None = None
+        self._dsn = dsn
         self._topic = topic
         self._model_type = model_type
 
-    async def __aenter__(self) -> KafkaProducer:
+    @asynccontextmanager
+    async def start(self) -> KafkaProducerAsync:
         """
-        Войти в контекстный менеджер
-        :return: объект продюсера
-        """
-
-        await self._producer.start()
-
-        return self
-
-    async def __aexit__(self, *args, **kwargs) -> None:
-        """
-        Выйти из контекстного менеджера
+        Запустить продюсера
+        :return объект продюсера
         """
 
-        pass
+        self._producer = AIOKafkaProducer(
+            bootstrap_servers=str(self._dsn).removeprefix(f"{config.scheme}://")
+        )
 
-    async def produce(self, messages: list[broker_message_dto.BrokerMessageDTO]) -> None:
+        try:
+            await self._producer.start()
+        finally:
+            yield self
+
+    async def produce(self, message: broker_message_dto.BrokerMessageDTO) -> None:
         """
-         Отправить сообщения в Kafka
-         :param messages: сообщения
+         Отправить сообщение в Kafka
+         :param message: сообщение
          """
 
-        for message in messages:
-            if not isinstance(message, self._model_type):
-                logger.error("Несоответствие типа сообщения; сообщение не отправлено")
+        if not isinstance(message, self._model_type):
+            logger.error("Несоответствие типа сообщения; сообщение не отправлено")
 
-                continue
-            try:
-                payload = message.model_dump_json(by_alias=True).encode("utf-8")
+            return
 
-                await self._producer.send(topic=self._topic, value=payload)
-            except KafkaError:
-                logger.exception(
-                    f"Не удалось отправить сообщение ({message.id} - {message.body} - {message.date}) в kafka"
-                )
+        try:
+            payload = message.model_dump_json(by_alias=True).encode("utf-8")
+
+            await self._producer.send(topic=self._topic, value=payload)
+        except KafkaError:
+            logger.exception(
+                f"Не удалось отправить сообщение ({message.id} - {message.body} - {message.date}) в kafka"
+            )
 
     async def stop(self) -> None:
         """
