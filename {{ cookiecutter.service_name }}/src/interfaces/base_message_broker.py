@@ -1,34 +1,61 @@
-# stdlib
-from abc import ABC, abstractmethod
+import abc
 
 
-class BaseProducer(ABC):
-    """Базовый интерфейс для асинхронного producer'а."""
+class BaseProducer(abc.ABC):
+    """
+    Интерфейс для продюсера
+    """
 
-    @abstractmethod
+    @abc.abstractmethod
     async def produce(self, *args, **kwargs):
-        """Produce метод."""
+        """
+        Отправить сообщение брокеру
+        """
 
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
+    async def start(self, *args, **kwargs):
+        """
+        Запустить продюсер
+        """
+
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def stop(self, *args, **kwargs):
-        """Остарновить работу продюсера"""
+        """
+        Остановить работу продюсера
+        """
 
         raise NotImplementedError
 
 
-class BaseConsumer(ABC):
-    """Базовый интерфейс для асинхронного consumer'а."""
+class BaseConsumer(abc.ABC):
+    """
+    Интерфейс для асинхронного консюмера
+    """
 
-    @abstractmethod
-    async def consume(self, *args, **kwargs):
-        """Consume метод."""
+    @abc.abstractmethod
+    async def retrieve(self, *args, **kwargs):
+        """
+        Прочитать одно сообщение из брокера
+        """
 
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
+    async def start(self, *args, **kwargs):
+        """
+        Запустить консюмера
+        """
+
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def stop(self, *args, **kwargs):
-        """Остарновить работу консюмера"""
+        """
+        Остановить работу консюмера
+        """
 
         raise NotImplementedError
