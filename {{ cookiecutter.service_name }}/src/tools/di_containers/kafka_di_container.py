@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 
-from brokers.kafka import consumer, producer
+from brokers.kafka import connection_proxy, consumer, producer
 
 
 class ProducerContainer(containers.DeclarativeContainer):
@@ -11,7 +11,8 @@ class ProducerContainer(containers.DeclarativeContainer):
     # указать модули, с которыми будет связан di-контейнер
     wiring_config = containers.WiringConfiguration(modules=None)
 
-    producer = providers.Factory(producer.KafkaProducer)
+    connection = providers.Factory(connection_proxy.AsyncKafkaProducerProxy)
+    producer = providers.Factory(producer.KafkaProducerAsync, connection)
 
 
 class ConsumerContainer(containers.DeclarativeContainer):
@@ -22,4 +23,5 @@ class ConsumerContainer(containers.DeclarativeContainer):
     # указать модули, с которыми будет связан di-контейнер
     wiring_config = containers.WiringConfiguration(modules=None)
 
-    consumer = providers.Factory(consumer.KafkaConsumer)
+    connection = providers.Factory(connection_proxy.AsyncKafkaProducerProxy)
+    consumer = providers.Factory(consumer.KafkaConsumerAsync, connection)

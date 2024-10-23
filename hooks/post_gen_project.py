@@ -191,6 +191,7 @@ class LibsConfig:
         "modules": [
             Config.template_path / "config" / "kafka_config.py",
             Config.template_path / "interfaces" / "base_message_broker.py",
+            Config.template_path / "brokers" / "kafka" / "connection_proxy.py",
             Config.template_path / "brokers" / "kafka" / "consumer.py",
             Config.template_path / "brokers" / "kafka" / "producer.py",
             Config.template_path / "models" / "broker_message_dto.py",

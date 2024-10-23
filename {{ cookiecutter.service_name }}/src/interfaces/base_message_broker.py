@@ -15,17 +15,9 @@ class BaseProducer(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def start(self, *args, **kwargs):
+    async def disconnect(self, *args, **kwargs) -> any:
         """
-        Запустить продюсер
-        """
-
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def stop(self, *args, **kwargs):
-        """
-        Остановить работу продюсера
+        Разорвать соединение с брокером
         """
 
         raise NotImplementedError
@@ -45,17 +37,9 @@ class BaseConsumer(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def start(self, *args, **kwargs):
+    async def disconnect(self, *args, **kwargs) -> any:
         """
-        Запустить консюмера
-        """
-
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def stop(self, *args, **kwargs):
-        """
-        Остановить работу консюмера
+        Разорвать соединение с брокером
         """
 
         raise NotImplementedError
