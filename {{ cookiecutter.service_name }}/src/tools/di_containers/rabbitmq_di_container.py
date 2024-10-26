@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 
-from brokers.rabbitmq import connections_manager, consumer, producer, routing_configurator
+from brokers.rabbitmq import connection_proxy, consumer, producer, routing_configurator
 
 
 class ProducerContainer(containers.DeclarativeContainer):
@@ -8,14 +8,11 @@ class ProducerContainer(containers.DeclarativeContainer):
     DI-контейнер с провадйерами для продюсера
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    # указать модули, с которыми будет связан di-контейнер
+    wiring_config = containers.WiringConfiguration(modules=None)
 
-    connection = providers.Factory(connections_manager.ProducerConnection)
-    routing_builder = providers.Factory(routing_configurator.RoutingBuilder)
-    routing_configurator = providers.Factory(routing_configurator.RoutingConfigurator, routing_builder)
-    producer = providers.Factory(
-        producer.RabbitMQProducer, connection, routing_configurator
-    )
+    connection = providers.Factory(connection_proxy.AsyncRMQProducerConnectionProxy)
+    producer = providers.Factory(producer.RabbitMQProducer, connection)
 
 
 class ConsumerContainer(containers.DeclarativeContainer):
@@ -23,11 +20,8 @@ class ConsumerContainer(containers.DeclarativeContainer):
     DI-контейнер с провадйерами для консюмера
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    # указать модули, с которыми будет связан di-контейнер
+    wiring_config = containers.WiringConfiguration(modules=None)
 
-    connection = providers.Factory(connections_manager.ConsumerConnection)
-    routing_builder = providers.Factory(routing_configurator.RoutingBuilder)
-    routing_configurator = providers.Factory(routing_configurator.RoutingConfigurator, routing_builder)
-    consumer = providers.Factory(
-        consumer.RabbitMQConsumer, connection, routing_configurator
-    )
+    connection = providers.Factory(connection_proxy.AsyncRMQConsumerConnectionProxy)
+    producer = providers.Factory(consumer.RabbitMQConsumer, connection, routing_configurator)
