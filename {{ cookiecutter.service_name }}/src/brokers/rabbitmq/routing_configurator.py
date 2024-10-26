@@ -8,7 +8,9 @@ config = rabbitmq_config.config
 
 class RoutingBuilder(base_configurator.BaseRoutingBuilder):
     """
-    Класс Builder для создания маршрутизации сообщений
+    Класс Builder для создания маршрутизации сообщений/
+
+    Экспериментальная реализация
     """
 
     pass
@@ -16,7 +18,9 @@ class RoutingBuilder(base_configurator.BaseRoutingBuilder):
 
 class RoutingConfigurator(base_configurator.BaseRoutingConfigurator):
     """
-    Класс-миксин, конфигурирующий обменники и очереди
+    Класс, конфигурирующий обменники и очереди.
+
+    Экспериментальная реализация
     """
 
     _is_declared: bool = False

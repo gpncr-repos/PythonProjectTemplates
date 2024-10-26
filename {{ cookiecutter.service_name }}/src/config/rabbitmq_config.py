@@ -16,8 +16,13 @@ class RabbitMQConfig(BaseSettings):
     rmq_user: str = Field(description="Имя пользователя", default="guest")
     rmq_password: str = Field(description="Пароль", default="guest")
 
+    # Добавить название обменника как поле класса
     exchange: str = Field(description="Название обменника сообщениями", default="exchange")
+
+    # Добавить название очереди как поле класса
     queue: str = Field(description="Название очереди", default="queue")
+
+    # Добавить название ключа маршрутизации как поле класса
     routing_key: str = Field(description="Ключ маршрутизации", default="routing_key")
 
     @computed_field
