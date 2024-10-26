@@ -22,7 +22,7 @@ class BaseProducer(abc.ABC):
 
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     async def stop(self, *args, **kwargs):
         """Остарновить работу продюсера"""
 
@@ -50,7 +50,7 @@ class BaseConsumer(abc.ABC):
 
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     async def stop(self, *args, **kwargs):
         """Остарновить работу консюмера"""
 

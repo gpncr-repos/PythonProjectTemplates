@@ -3,10 +3,12 @@ import abc
 import aio_pika
 
 
-class BaseRoutingBuilder(abc.ABC):
+class BaseRoutingBuilder:
     """
-    Базовый класc конфигуратора маршрутизации сообщений для RabbitMQ, реализующий паттерн Builder.
-    Является объектом Builder
+    Базовый класc конфигуратора маршрутизации сообщений для RabbitMQ (aio_pika), реализующий паттерн Builder.
+    Является объектом Builder.
+
+    Экспериментальный интерфейс для задания маршрутизации сообщений в коде
     """
 
     async def declare_exchange(
@@ -80,8 +82,10 @@ class BaseRoutingBuilder(abc.ABC):
 
 class BaseRoutingConfigurator(abc.ABC):
     """
-    Базовый класс конфигуратора маршрутизации сообщений для RabbitMQ, реализующий паттерн Builder.
-    Является объектом Director
+    Базовый класс конфигуратора маршрутизации сообщений для RabbitMQ (aio_pika), реализующий паттерн Builder.
+    Является объектом Director.
+
+    Экспериментальный интерфейс для задания маршрутизации сообщений в коде
     """
 
     def __init__(self, builder: BaseRoutingBuilder) -> None:
