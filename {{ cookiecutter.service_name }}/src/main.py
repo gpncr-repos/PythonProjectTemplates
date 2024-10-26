@@ -18,7 +18,7 @@ def create_app() -> fastapi.FastAPI:
         title=app_config.project_name,
         version=app_config.app_version,
         debug=True if app_config.okd_stage == "DEV" else False,
-        default_response_class=fastapi.responses.JSONResponse
+        default_response_class=fastapi.responses.JSONResponse,
     )
 
     return fastapi_app

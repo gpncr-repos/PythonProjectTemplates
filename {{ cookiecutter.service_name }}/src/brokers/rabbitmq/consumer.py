@@ -11,21 +11,22 @@ config = rabbitmq_config.config
 
 
 class RabbitMQConsumer(base_message_broker.BaseConsumer):
-    def __init__(
-        self,
-        connection_proxy: base_proxy.ConnectionProxy
-    ) -> None:
+    def __init__(self, connection_proxy: base_proxy.ConnectionProxy) -> None:
         """
         Инициализировать переменные
         :param connection_proxy: прокси-объект соединения
         """
 
         self._connection_proxy = connection_proxy
-        self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = asyncio.Queue()
+        self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = (
+            asyncio.Queue()
+        )
         self._connection: aio_pika.abc.AbstractRobustConnection | None = None
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
 
-    async def retrieve(self, queue_name: str, prefetch_count: int = 1) -> broker_message_dto.BrokerMessageDTO:
+    async def retrieve(
+        self, queue_name: str, prefetch_count: int = 1
+    ) -> broker_message_dto.BrokerMessageDTO:
         """
         Прочитать сообщение из очереди
         :param queue_name: название очереди
@@ -47,9 +48,7 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         try:
             decoded = json.loads(message.body)
             return broker_message_dto.BrokerMessageDTO(
-                id=decoded["id"],
-                body=decoded["body"],
-                date=decoded["date"]
+                id=decoded["id"], body=decoded["body"], date=decoded["date"]
             )
         except json.JSONDecodeError:
             raise

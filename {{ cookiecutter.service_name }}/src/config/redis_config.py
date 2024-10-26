@@ -1,7 +1,7 @@
 # stdlib
 import dotenv
 
-#thirdparty
+# thirdparty
 from pydantic import Field, RedisDsn
 from pydantic_settings import BaseSettings
 
@@ -17,7 +17,9 @@ class RedisConfig(BaseSettings):
     port: int = Field(6379, alias="REDIS_PORT", description="Порт подключения к Redis")
     password: str = Field(alias="REDIS_PASSWORD", description="Пароль Redis")
     db_id: str = Field(alias="REDIS_DB", description="Идентификатор БД Redis")
-    broker_id: str = Field(alias="REDIS_BROKER", description="Идентификатор брокера Redis")
+    broker_id: str = Field(
+        alias="REDIS_BROKER", description="Идентификатор брокера Redis"
+    )
 
     def _build_dsn(self, path: str):
         return RedisDsn.build(

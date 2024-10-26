@@ -14,7 +14,9 @@ class Config:
     """
 
     # Путь к папке src шаблона
-    template_path = pathlib.Path.cwd().resolve().parent / "{{ cookiecutter.service_name }}" / "src"
+    template_path = (
+        pathlib.Path.cwd().resolve().parent / "{{ cookiecutter.service_name }}" / "src"
+    )
 
 
 class DependenciesCreator:
@@ -53,8 +55,7 @@ class DependenciesCreator:
         )
 
         # словарь зависимостей, где ключ - название библиотеки / фреймворка, значение - версия
-        self.dependencies = {
-        }
+        self.dependencies = {}
 
     def remove_dependency(self, name: str) -> None:
         """
@@ -120,12 +121,7 @@ class DockerComposeMerger:
         :return: собранный словарь
         """
 
-        merged = {
-            "version": None,
-            "services": {},
-            "networks": {},
-            "volumes": {}
-        }
+        merged = {"version": None, "services": {}, "networks": {}, "volumes": {}}
 
         for file in self.files_to_compose:
             with open(file, "r") as f:
@@ -168,6 +164,7 @@ class LibsConfig:
     Содержит поля с именем в виде названия библиотеки, и значением в виде словаря с путями до зависимых модулей и
     docker-compose файла, а также необходимыми зависимостями
     """
+
     postgres = {
         "modules": [
             Config.template_path / "config" / "pg_config.py",
@@ -179,7 +176,7 @@ class LibsConfig:
             "psycopg2": "^2.9.0",
             "sqlalchemy": "^2.0.0",
             "alembic": "^1.13.0",
-        }
+        },
     }
     redis = {
         "modules": [
@@ -191,7 +188,7 @@ class LibsConfig:
         "compose": Config.template_path / "to_compose" / "redis.yaml",
         "dependencies": {
             "redis": "^5.0.0",
-        }
+        },
     }
     kafka = {
         "modules": [
@@ -201,12 +198,10 @@ class LibsConfig:
             Config.template_path / "brokers" / "kafka" / "consumer.py",
             Config.template_path / "brokers" / "kafka" / "producer.py",
             Config.template_path / "models" / "broker_message_dto.py",
-            Config.template_path / "tools" / "di_containers" / "kafka_di_container.py"
+            Config.template_path / "tools" / "di_containers" / "kafka_di_container.py",
         ],
         "compose": Config.template_path / "to_compose" / "kafka.yaml",
-        "dependencies": {
-            "aiokafka": "^0.11.0"
-        }
+        "dependencies": {"aiokafka": "^0.11.0"},
     }
     rabbitmq = {
         "modules": [
@@ -215,13 +210,16 @@ class LibsConfig:
             Config.template_path / "brokers" / "rabbitmq" / "producer.py",
             Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
             Config.template_path / "config" / "rabbitmq_config.py",
-            Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
-            Config.template_path / "tools" / "di_containers" / "rabbitmq_di_container.py"
+            Config.template_path
+            / "interfaces"
+            / "base_rabbitmq_routing_configurator.py",
+            Config.template_path
+            / "tools"
+            / "di_containers"
+            / "rabbitmq_di_container.py",
         ],
         "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
-        "dependencies": {
-            "aio-pika": "^9.4.3"
-        }
+        "dependencies": {"aio-pika": "^9.4.3"},
     }
     # TODO: Дополнять в процессе добавления библиотек
 
@@ -252,7 +250,7 @@ def resolve_libs() -> None:
         "postgres": "{{cookiecutter.add_postgres}}" == "True",
         "redis": "{{cookiecutter.add_redis}}" == "True",
         "kafka": "{{cookiecutter.add_kafka}}" == "True",
-        "rabbitmq": "{{cookiecutter.add_rabbitmq}}" == "True"
+        "rabbitmq": "{{cookiecutter.add_rabbitmq}}" == "True",
         # TODO: Дополнять в процессе добавления библиотек
     }
 
@@ -267,13 +265,17 @@ def resolve_libs() -> None:
             dependencies = getattr(LibsConfig, lib)["dependencies"]
             poetry_creator.add_dependency(dependencies)
 
-    compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
+    compose_merger.files_to_compose.append(
+        Config.template_path / "to_compose" / "app.yaml"
+    )
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
 
     file_manager.paths_to_remove.append(Config.template_path / "to_compose")
 
+
 def rename_env_example():
     file_manager.rename_file(Config.template_path / ".env.example", ".env")
+
 
 def main() -> None:
     """

@@ -16,8 +16,12 @@ class RedisSyncContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(packages=["web.entrypoints"])
 
     redis_settings = providers.Singleton(redis_config.RedisConfig)
-    redis_sync_conn = providers.Factory(redis_connection.RedisConnection, redis_settings)
-    redis_sync_repository = providers.Factory(redis_repository.SyncRedisRepository, redis_sync_conn)
+    redis_sync_conn = providers.Factory(
+        redis_connection.RedisConnection, redis_settings
+    )
+    redis_sync_repository = providers.Factory(
+        redis_repository.SyncRedisRepository, redis_sync_conn
+    )
     redis_sync_uow = providers.Factory(redis_uow.SyncRedisUOW, redis_sync_repository)
 
 
@@ -29,6 +33,10 @@ class RedisAsyncContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(packages=["web.entrypoints"])
 
     redis_settings = providers.Singleton(redis_config.RedisConfig)
-    redis_async_conn = providers.Factory(redis_connection.RedisAsyncConnection, redis_settings)
-    redis_async_repository = providers.Factory(redis_repository.AsyncRedisRepository, redis_async_conn)
+    redis_async_conn = providers.Factory(
+        redis_connection.RedisAsyncConnection, redis_settings
+    )
+    redis_async_repository = providers.Factory(
+        redis_repository.AsyncRedisRepository, redis_async_conn
+    )
     redis_async_uow = providers.Factory(redis_uow.AsyncRedisUOW, redis_async_repository)

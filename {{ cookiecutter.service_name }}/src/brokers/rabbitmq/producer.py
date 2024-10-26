@@ -11,7 +11,9 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
     def __init__(
         self,
         connection_proxy: base_proxy.ConnectionProxy,
-        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO
+        model_type: type[
+            broker_message_dto.BrokerMessageDTO
+        ] = broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Инициализировать переменные
@@ -28,7 +30,7 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         self,
         exchange_name: str,
         routing_key: str,
-        message: broker_message_dto.BrokerMessageDTO
+        message: broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Отправить сообщение в обменник
@@ -43,7 +45,9 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         self._connection = await self._connection_proxy.connect()
         self._channel = await self._connection.channel()
 
-        message = aio_pika.Message(message.model_dump_json(by_alias=True).encode("utf-8"))
+        message = aio_pika.Message(
+            message.model_dump_json(by_alias=True).encode("utf-8")
+        )
         exchange = await self._channel.get_exchange(exchange_name)
 
         await exchange.publish(message, routing_key)

@@ -22,12 +22,6 @@ class BaseProducer(abc.ABC):
 
         raise NotImplementedError
 
-    @abc.abstractmethod
-    async def stop(self, *args, **kwargs):
-        """Остарновить работу продюсера"""
-
-        raise NotImplementedError
-
 
 class BaseConsumer(abc.ABC):
     """
@@ -47,11 +41,5 @@ class BaseConsumer(abc.ABC):
         """
         Разорвать соединение с брокером
         """
-
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def stop(self, *args, **kwargs):
-        """Остарновить работу консюмера"""
 
         raise NotImplementedError

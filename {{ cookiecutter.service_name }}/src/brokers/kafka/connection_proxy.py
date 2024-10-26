@@ -53,7 +53,7 @@ class AsyncKafkaConsumerProxy(base_proxy.ConnectionProxy):
         self,
         dsn: KafkaDsn = config.kafka_dsn,
         topic: str = config.topic,
-        group_id: str | None = None
+        group_id: str | None = None,
     ) -> None:
         """
         Инициализировать переменные
@@ -75,11 +75,11 @@ class AsyncKafkaConsumerProxy(base_proxy.ConnectionProxy):
 
         if self._consumer is None:
             self._consumer = aio_consumer.AIOKafkaConsumer(
-            self._topic,
-            bootstrap_servers=str(self._dsn).removeprefix(f"{config.scheme}://"),
-            auto_offset_reset="earliest",
-            group_id=self._group_id
-        )
+                self._topic,
+                bootstrap_servers=str(self._dsn).removeprefix(f"{config.scheme}://"),
+                auto_offset_reset="earliest",
+                group_id=self._group_id,
+            )
 
             await self._consumer.start()
 
