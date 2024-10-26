@@ -1,12 +1,10 @@
-from __future__ import annotations  # no qa
-
 import asyncio
 import json
 
 import aio_pika
 
 from config import rabbitmq_config
-from interfaces import base_message_broker, base_proxy, base_rabbitmq_routing_configurator as base_configurator
+from interfaces import base_message_broker, base_proxy
 from models.dto import broker_message_dto
 
 config = rabbitmq_config.config
@@ -15,74 +13,51 @@ config = rabbitmq_config.config
 class RabbitMQConsumer(base_message_broker.BaseConsumer):
     def __init__(
         self,
-        connection_proxy: base_proxy.ConnectionProxy,
-        router: base_configurator.BaseRoutingConfigurator,
-        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO,
+        connection_proxy: base_proxy.ConnectionProxy
     ) -> None:
         """
         Инициализировать переменные
         :param connection_proxy: прокси-объект соединения
-        :param router: конфигуратор маршрутизации сообщений
-        :param model_type: допустимый тип сообщения
         """
 
         self._connection_proxy = connection_proxy
-        self._connection: aio_pika.abc.AbstractRobustConnection | None = None
-        self._routing_configurator = router
         self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = asyncio.Queue()
+        self._connection: aio_pika.abc.AbstractRobustConnection | None = None
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
-        self._model_type = model_type
 
-    async def __aenter__(
-        self,
-        queue_name=config.queue,
-        prefetch_count: int = 1
-    ) -> RabbitMQConsumer:
-        """
-        Войти в контекстный менеджер
-        :param queue_name: название очереди
-        :param prefetch_count: количество сообщений, посылаемое брокером, за раз
-        :return: объект продюсера
-        """
-
-        self._connection = await self._connection_proxy.get_connection()
-        self._channel = await self._connection.channel()
-
-        await self._routing_configurator.configure_routes(self._channel)
-        await self._channel.set_qos(prefetch_count=prefetch_count)
-
-        await self._routing_configurator.queues[queue_name].consume(self._queue.put)
-
-        return self
-
-    async def __aexit__(self, *args, **kwargs) -> None:
-        """
-        Выйти из контекстного менеджера
-        """
-
-        await self._channel.close()
-        await self._connection_proxy.close_connection()
-
-    async def consume(self) -> broker_message_dto.BrokerMessageDTO:
+    async def retrieve(self, queue_name: str, prefetch_count: int = 1) -> broker_message_dto.BrokerMessageDTO:
         """
         Прочитать сообщение из очереди
+        :param queue_name: название очереди
+        :param prefetch_count: количество сообщений, посылаемое брокером, за раз
+        :return: прочитанное сообщение
         """
 
-        if self._connection is None:
-            raise ValueError("Объект соединения не инициализирован")
+        self._connection = await self._connection_proxy.connect()
+        self._channel = await self._connection.channel()
+
+        await self._channel.set_qos(prefetch_count=prefetch_count)
+
+        queue = await self._channel.get_queue(queue_name)
+        await queue.consume(self._queue.put)
 
         message = await self._queue.get()
         await message.ack()
 
         try:
             decoded = json.loads(message.body)
-            return self._model_type(**decoded)
+            return broker_message_dto.BrokerMessageDTO(
+                id=decoded["id"],
+                body=decoded["body"],
+                date=decoded["date"]
+            )
         except json.JSONDecodeError:
             raise
 
-    async def stop(self) -> None:
+    async def disconnect(self) -> any:
         """
-        Остановить продюсер
+        Разорвать соединение с брокером
         """
 
-        await self._connection_proxy.close_connection()
+        await self._channel.close()
+        await self._connection_proxy.disconnect()
