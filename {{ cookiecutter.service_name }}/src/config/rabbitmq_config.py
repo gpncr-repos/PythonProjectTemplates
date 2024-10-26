@@ -17,7 +17,9 @@ class RabbitMQConfig(BaseSettings):
     rmq_password: str = Field(description="Пароль", default="guest")
 
     # Добавить название обменника как поле класса
-    exchange: str = Field(description="Название обменника сообщениями", default="exchange")
+    exchange: str = Field(
+        description="Название обменника сообщениями", default="exchange"
+    )
 
     # Добавить название очереди как поле класса
     queue: str = Field(description="Название очереди", default="queue")
@@ -33,7 +35,7 @@ class RabbitMQConfig(BaseSettings):
             port=self.rmq_port,
             username=self.rmq_user,
             password=self.rmq_password,
-            scheme="amqp"
+            scheme="amqp",
         )
 
 

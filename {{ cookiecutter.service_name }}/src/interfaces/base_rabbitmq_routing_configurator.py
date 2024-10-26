@@ -30,11 +30,7 @@ class BaseRoutingBuilder:
         return await channel.declare_exchange(name, type_, *args, **kwargs)
 
     async def declare_queue(
-        self,
-        channel: aio_pika.abc.AbstractRobustChannel,
-        name: str,
-        *args,
-        **kwargs
+        self, channel: aio_pika.abc.AbstractRobustChannel, name: str, *args, **kwargs
     ) -> aio_pika.abc.AbstractRobustQueue:
         """
         Объявить обменник сообщениями
@@ -99,9 +95,7 @@ class BaseRoutingConfigurator(abc.ABC):
         self.queues: dict[str, aio_pika.abc.AbstractRobustQueue] = {}
 
     async def get_exchange(
-        self,
-        name: str,
-        channel: aio_pika.abc.AbstractRobustChannel
+        self, name: str, channel: aio_pika.abc.AbstractRobustChannel
     ) -> aio_pika.abc.AbstractExchange:
         """
         Получить объект обменника сообщений по его названию
@@ -116,9 +110,7 @@ class BaseRoutingConfigurator(abc.ABC):
         return await channel.get_exchange(name)
 
     async def get_queue(
-        self,
-        name: str,
-        channel: aio_pika.abc.AbstractRobustChannel
+        self, name: str, channel: aio_pika.abc.AbstractRobustChannel
     ) -> aio_pika.abc.AbstractQueue:
         """
         Получить объект очереди по ее названию
@@ -133,7 +125,9 @@ class BaseRoutingConfigurator(abc.ABC):
         return await channel.get_queue(name)
 
     @abc.abstractmethod
-    async def configure_routes(self, channel: aio_pika.abc.AbstractRobustChannel, *args, **kwargs) -> None:
+    async def configure_routes(
+        self, channel: aio_pika.abc.AbstractRobustChannel, *args, **kwargs
+    ) -> None:
         """
         Сконфигурировать маршрутизацию сообщений
         :param channel: объект канала

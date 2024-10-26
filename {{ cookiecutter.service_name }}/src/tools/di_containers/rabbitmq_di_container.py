@@ -24,4 +24,6 @@ class ConsumerContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(modules=None)
 
     connection = providers.Factory(connection_proxy.AsyncRMQConsumerConnectionProxy)
-    producer = providers.Factory(consumer.RabbitMQConsumer, connection, routing_configurator)
+    producer = providers.Factory(
+        consumer.RabbitMQConsumer, connection, routing_configurator
+    )

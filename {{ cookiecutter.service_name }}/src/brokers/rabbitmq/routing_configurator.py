@@ -32,7 +32,9 @@ class RoutingConfigurator(base_configurator.BaseRoutingConfigurator):
         """
         cls._is_declared = True
 
-    async def configure_routes(self, channel: aio_pika.abc.AbstractRobustChannel, *args, **kwargs) -> None:
+    async def configure_routes(
+        self, channel: aio_pika.abc.AbstractRobustChannel, *args, **kwargs
+    ) -> None:
         """
         Сконфигурировать обменники и очереди, которые к ним привязаны
         :param channel: объект канала
@@ -41,7 +43,9 @@ class RoutingConfigurator(base_configurator.BaseRoutingConfigurator):
         if self._is_declared is True:
             return
 
-        exchange = await self._builder.declare_exchange(channel, config.exchange, aio_pika.ExchangeType.DIRECT)
+        exchange = await self._builder.declare_exchange(
+            channel, config.exchange, aio_pika.ExchangeType.DIRECT
+        )
         self.exchanges[exchange.name] = exchange
 
         queue = await self._builder.declare_queue(channel, config.queue)

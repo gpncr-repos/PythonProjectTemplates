@@ -22,7 +22,6 @@ class SyncRedisUOW(base_uow.BaseSyncUOW):
 
         self.repository.connection.close()
 
-
     def commit(self) -> None:
         """
         Сделать коммит изменений
@@ -51,14 +50,12 @@ class AsyncRedisUOW(base_uow.BaseAsyncUOW):
         self.repository = repository
         super().__init__()
 
-
     async def __aexit__(self, *args, **kwargs) -> None:
         """
         Выйти из контекстного менеджера
         """
 
         await self.repository.connection.aclose()
-
 
     async def commit(self) -> None:
         """
