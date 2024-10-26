@@ -8,5 +8,6 @@
   "async_fastapi": ["auto", "wsgi"],
   "add_postgres": false,
   "add_redis": false,
-  "add_kafka": false
+  "add_kafka": false,
+  "add_rabbitmq": false
 }
