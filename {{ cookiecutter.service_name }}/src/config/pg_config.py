@@ -36,6 +36,16 @@ class PostgresConfig(BaseSettings):
             scheme="postgresql+asyncpg",
         )
 
+    @property
+    def psycopg_dsn(self) -> PostgresDsn:
+        """
+        Получение url для синхронного подключения к Postgres через psycopg
+        :return: url
+        """
+        return self._build_dsn(
+            scheme="postgresql",
+        )
+
     def _build_dsn(self, scheme: str) -> PostgresDsn:
         """
         Сборщик url
@@ -50,3 +60,5 @@ class PostgresConfig(BaseSettings):
             port=self.port,
             path=self.db_name,
         )
+
+pg_config = PostgresConfig()

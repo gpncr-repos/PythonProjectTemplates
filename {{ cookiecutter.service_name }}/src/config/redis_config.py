@@ -35,3 +35,5 @@ class RedisConfig(BaseSettings):
     @property
     def broker_dsn(self) -> RedisDsn:
         return self._build_dsn(self.broker_id)
+
+redis_config = RedisConfig()
