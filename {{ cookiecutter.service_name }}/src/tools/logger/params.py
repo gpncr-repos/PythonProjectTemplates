@@ -8,6 +8,8 @@ class CustomLogParams:
     Класс, содержащий поля для логирования
     """
 
+    # Добавить свои поля класса как поля для вывода в лог
+
     # Тип лога
     system_log_type: Literal["user", "application"] = "application"
 

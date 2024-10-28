@@ -48,6 +48,7 @@ class DependenciesCreator:
                 pydantic-settings = "^2.5.0"
                 dependency-injector = "^4.41.0"
                 pre-commit = "^4.0.1"
+                python-json-logger = "^2.0.7"
             """
         )
 
