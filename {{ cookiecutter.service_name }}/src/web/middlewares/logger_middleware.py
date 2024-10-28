@@ -75,6 +75,8 @@ class LogRequestInfoMiddleware(starlette.middleware.base.BaseHTTPMiddleware):
     Middleware для логирования информации о запросе, а также о теле запроса и теле ответа (в случае ошибки)
     """
 
+    ERROR_HTTP_CODES = range(http_status.HTTP_400_BAD_REQUEST, http_status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED + 1)
+
     async def dispatch(
         self,
         request: Request,
@@ -122,7 +124,7 @@ class LogRequestInfoMiddleware(starlette.middleware.base.BaseHTTPMiddleware):
             "request_time": request_total
         }
 
-        if http_status.HTTP_400_BAD_REQUEST <= status <= http_status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED:
+        if status in self.ERROR_HTTP_CODES:
             if isinstance(response, starlette.middleware.base._StreamingResponse):
                 response_body_source = [chunk async for chunk in response.body_iterator]
                 response.body_iterator = iterate_in_threadpool(iter(response_body_source))
