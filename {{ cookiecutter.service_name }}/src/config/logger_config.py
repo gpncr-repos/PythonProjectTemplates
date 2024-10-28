@@ -79,9 +79,9 @@ def get_json_output_logging_config() -> dict:
 
     if config.okd_stage == "DEV":
         logger_config["root"]["filters"].append("infoFilter")
-        logger_config["loggers"]["uvicorn"]["filters"].append("infoFilter")
+        logger_config["loggers"]["uvicorn"]["filters"].append("debugFilter")
     else:
         logger_config["root"]["filters"].append("debugFilter")
-        logger_config["loggers"]["uvicorn"]["filters"].append("debugFilter")
+        logger_config["loggers"]["uvicorn"]["filters"].append("infoFilter")
 
     return logger_config
