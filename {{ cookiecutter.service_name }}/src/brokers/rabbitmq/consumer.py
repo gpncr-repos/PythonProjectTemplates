@@ -2,7 +2,6 @@ import asyncio
 import json
 
 import aio_pika
-
 from config import rabbitmq_config
 from interfaces import base_message_broker, base_proxy
 from models.dto import broker_message_dto
@@ -18,10 +17,7 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         """
 
         self._connection_proxy = connection_proxy
-        self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = (
-            asyncio.Queue()
-        )
-        self._connection: aio_pika.abc.AbstractRobustConnection | None = None
+        self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = asyncio.Queue()
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
 
     async def retrieve(
@@ -34,8 +30,10 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         :return: прочитанное сообщение
         """
 
-        self._connection = await self._connection_proxy.connect()
-        self._channel = await self._connection.channel()
+        connection = await self._connection_proxy.connect()
+
+        if self._channel is None:
+            self._channel = await connection.channel()
 
         await self._channel.set_qos(prefetch_count=prefetch_count)
 
