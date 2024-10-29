@@ -1,5 +1,4 @@
 import aio_pika
-
 from config import rabbitmq_config
 from interfaces import base_rabbitmq_routing_configurator as base_configurator
 
@@ -42,6 +41,8 @@ class RoutingConfigurator(base_configurator.BaseRoutingConfigurator):
 
         if self._is_declared is True:
             return
+
+        # Добавить свою реализацию маршрутизации
 
         exchange = await self._builder.declare_exchange(
             channel, config.exchange, aio_pika.ExchangeType.DIRECT
