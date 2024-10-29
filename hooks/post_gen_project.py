@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import sys
 import textwrap
+
 import yaml
 
 
@@ -14,9 +15,7 @@ class Config:
     """
 
     # Путь к папке src шаблона
-    template_path = (
-        pathlib.Path.cwd().resolve().parent / "{{ cookiecutter.service_name }}" / "src"
-    )
+    template_path = pathlib.Path.cwd().resolve().parent / "{{ cookiecutter.service_name }}" / "src"
 
 
 class DependenciesCreator:
@@ -78,8 +77,7 @@ class DependenciesCreator:
 
     def create_pyproject(self) -> str:
         final_dependencies = [
-            f'{dependency} = "{version}"'
-            for dependency, version in self.dependencies.items()
+            f'{dependency} = "{version}"' for dependency, version in self.dependencies.items()
         ]
 
         return self.pyproject_template + "\n".join(final_dependencies)
@@ -161,7 +159,8 @@ class DockerComposeMerger:
 
 class LibsConfig:
     """
-    Содержит поля с именем в виде названия библиотеки, и значением в виде словаря с путями до зависимых модулей и
+    Содержит поля с именем в виде названия библиотеки,
+    и значением в виде словаря с путями до зависимых модулей и
     docker-compose файла, а также необходимыми зависимостями
     """
 
@@ -210,13 +209,8 @@ class LibsConfig:
             Config.template_path / "brokers" / "rabbitmq" / "producer.py",
             Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
             Config.template_path / "config" / "rabbitmq_config.py",
-            Config.template_path
-            / "interfaces"
-            / "base_rabbitmq_routing_configurator.py",
-            Config.template_path
-            / "tools"
-            / "di_containers"
-            / "rabbitmq_di_container.py",
+            Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
+            Config.template_path / "tools" / "di_containers" / "rabbitmq_di_container.py",
         ],
         "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
         "dependencies": {"aio-pika": "^9.4.3"},
@@ -265,9 +259,7 @@ def resolve_libs() -> None:
             dependencies = getattr(LibsConfig, lib)["dependencies"]
             poetry_creator.add_dependency(dependencies)
 
-    compose_merger.files_to_compose.append(
-        Config.template_path / "to_compose" / "app.yaml"
-    )
+    compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
 
     file_manager.paths_to_remove.append(Config.template_path / "to_compose")
