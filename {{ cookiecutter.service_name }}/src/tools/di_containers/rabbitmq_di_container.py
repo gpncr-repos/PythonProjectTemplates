@@ -1,6 +1,5 @@
+from brokers.rabbitmq import connection_proxy, consumer, producer
 from dependency_injector import containers, providers
-
-from brokers.rabbitmq import connection_proxy, consumer, producer, routing_configurator
 
 
 class ProducerContainer(containers.DeclarativeContainer):
@@ -24,6 +23,4 @@ class ConsumerContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(modules=None)
 
     connection = providers.Factory(connection_proxy.AsyncRMQConsumerConnectionProxy)
-    producer = providers.Factory(
-        consumer.RabbitMQConsumer, connection, routing_configurator
-    )
+    consumer = providers.Factory(consumer.RabbitMQConsumer, connection)
