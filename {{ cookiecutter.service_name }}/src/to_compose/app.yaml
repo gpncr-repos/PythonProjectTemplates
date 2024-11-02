@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-    {{cookiecutter.service_name}}.backend:
-      build:
-        context: .
-        dockerfile: Dockerfile
+  {{cookiecutter.service_name}}.backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
       ports:
         - ${APP_PORT}:8000
       env_file:
-      - ./.env
+        - ./.env

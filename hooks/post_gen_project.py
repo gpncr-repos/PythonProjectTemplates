@@ -168,6 +168,7 @@ class LibsConfig:
         "modules": [
             Config.template_path / "config" / "pg_config.py",
             Config.template_path / "storage" / "sqlalchemy",
+            Config.template_path.parent / "docs" / "postgres-sqlalchemy.md",
         ],
         "compose": Config.template_path / "to_compose" / "postgres.yaml",
         "dependencies": {
@@ -183,6 +184,7 @@ class LibsConfig:
             Config.template_path / "repositories" / "redis_repository.py",
             Config.template_path / "tools" / "di_containers" / "redis_container.py",
             Config.template_path / "storage" / "redis",
+            Config.template_path.parent / "docs" / "redis-cache.md",
         ],
         "compose": Config.template_path / "to_compose" / "redis.yaml",
         "dependencies": {
@@ -198,6 +200,7 @@ class LibsConfig:
             Config.template_path / "brokers" / "kafka" / "producer.py",
             Config.template_path / "models" / "broker_message_dto.py",
             Config.template_path / "tools" / "di_containers" / "kafka_di_container.py",
+            Config.template_path.parent / "docs" / "kafka.md",
         ],
         "compose": Config.template_path / "to_compose" / "kafka.yaml",
         "dependencies": {"aiokafka": "^0.11.0"},
@@ -211,6 +214,7 @@ class LibsConfig:
             Config.template_path / "config" / "rabbitmq_config.py",
             Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
             Config.template_path / "tools" / "di_containers" / "rabbitmq_di_container.py",
+            Config.template_path.parent / "docs" / "rabbitmq.md",
         ],
         "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
         "dependencies": {"aio-pika": "^9.4.3"},
