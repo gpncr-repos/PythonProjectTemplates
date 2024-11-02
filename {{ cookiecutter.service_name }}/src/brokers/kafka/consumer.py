@@ -26,7 +26,9 @@ class KafkaConsumerAsync(base_message_broker.BaseConsumer):
     def __init__(
         self,
         connection_proxy: base_proxy.ConnectionProxy,
-        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO
+        model_type: type[
+            broker_message_dto.BrokerMessageDTO
+        ] = broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Инициализировать переменные

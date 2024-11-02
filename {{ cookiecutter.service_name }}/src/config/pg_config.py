@@ -10,10 +10,15 @@ class PostgresConfig(BaseSettings):
     """
     Класс настроек для БД
     """
+
     user: str = Field(alias="POSTGRES_USER", description="Имя пользователя БД")
-    password: str = Field(alias="POSTGRES_PASSWORD", description="Пароль пользователя БД")
+    password: str = Field(
+        alias="POSTGRES_PASSWORD", description="Пароль пользователя БД"
+    )
     host: str = Field(alias="POSTGRES_HOST", description="Хост подключения к БД")
-    port: int = Field(alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД")
+    port: int = Field(
+        alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД"
+    )
     db_name: str = Field(alias="POSTGRES_DB", description="Имя БД")
 
     @property

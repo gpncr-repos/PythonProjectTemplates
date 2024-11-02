@@ -24,7 +24,9 @@ class KafkaProducerAsync(base_message_broker.BaseProducer):
         self,
         connection_proxy: base_proxy.ConnectionProxy,
         topic: str = config.topic,
-        model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO
+        model_type: type[
+            broker_message_dto.BrokerMessageDTO
+        ] = broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Инициализировать переменные

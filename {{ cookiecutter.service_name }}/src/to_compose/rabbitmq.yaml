@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  {{cookiecutter.service_name}}.rabbitmq:
+    image: #rabbitmq_image_path
+    hostname: {{cookiecutter.service_name}}.rabbitmq
+    container_name: {{cookiecutter.service_name}}.rabbitmq
+    ports:
+      - "${RABBITMQ_SERVER_PORT}:5672"
+      - "${RABBITMQ_CLIENT_PORT}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    env_file:
+      - ./.env
+
+volumes:
+  rabbitmq-data:

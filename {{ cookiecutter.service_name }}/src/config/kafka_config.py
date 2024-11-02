@@ -24,11 +24,7 @@ class KafkaConfig(BaseSettings):
     @computed_field
     @property
     def kafka_dsn(self) -> str:
-        return KafkaDsn.build(
-            host=self.host,
-            port=self.port,
-            scheme=self.scheme
-        )
+        return KafkaDsn.build(host=self.host, port=self.port, scheme=self.scheme)
 
 
 config = KafkaConfig()

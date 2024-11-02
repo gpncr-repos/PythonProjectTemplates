@@ -24,7 +24,6 @@ class RedisConnection:
         return redis.from_url(self.redis_url)
 
 
-
 class RedisAsyncConnection:
 
     def __init__(self, config: RedisConfig):
