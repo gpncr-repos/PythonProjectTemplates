@@ -27,11 +27,11 @@
 - Автоматическая генерация docker-compose
 - Асинхронная Kafka
 - Асинхронный RabbitMQ
+- Postgres через psycopg
 
 ## RoadMap
 
 - Redis как брокер
-- Postgres через psycopg
 - Тестирование
 - MiniO S3
 - Конфигурация шаблона под определенный шаблон интеграции (bff, ...)
