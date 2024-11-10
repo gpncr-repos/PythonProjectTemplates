@@ -1,11 +1,10 @@
 # stdlib
 from typing import Any
 
-from interfaces.base_raw_sql_creator import BaseRawSQLCreator
-
 # project
+from interfaces.base_raw_sql_creator import BaseRawSQLCreator
 from interfaces.base_repository import BaseRepository
-from storage.psycopg.psycopg_connection import PsycopgAsyncConnection, PsycopgSyncConnection
+from storage.psycopg.psycopg_proxy import PsycopgAsyncConnectionProxy, PsycopgConnectionProxy
 
 
 class PsycopgSyncRepository(BaseRepository):
@@ -15,15 +14,15 @@ class PsycopgSyncRepository(BaseRepository):
 
     def __init__(
         self,
-        connection: PsycopgSyncConnection,
+        connection_proxy: PsycopgConnectionProxy,
         sql_creator: BaseRawSQLCreator,
     ) -> None:
         """
         Инициализировать переменные
-        :param connection: объект соединения psycopg
+        :param connection_proxy: объект прокси-соединения psycopg
         :param sql_creator: объект класса для создания sql query
         """
-        self._connection = connection
+        self.connection_proxy = connection_proxy
         self._sql_creator = sql_creator
 
     def create(self, table: str, data: dict[str, Any]) -> None:
@@ -33,10 +32,9 @@ class PsycopgSyncRepository(BaseRepository):
         :param data: словарь с данными для создания записи
         """
         insert_query = self._sql_creator.make_insert_query(table, list(data.keys()))
-        with self._connection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(insert_query, list(data.values()))
-                conn.commit()
+        connection = self.connection_proxy.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(insert_query, list(data.values()))
 
     def retrieve(self, table: str, conditions: dict[str, Any]) -> tuple:
         """
@@ -45,10 +43,10 @@ class PsycopgSyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для выборки
         """
         select_query = self._sql_creator.make_select_query(table, list(conditions.keys()))
-        with self._connection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(select_query, list(conditions.values()))
-                return cursor.fetchone()
+        connection = self.connection_proxy.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(select_query, list(conditions.values()))
+            return cursor.fetchone()
 
     def list(self, table: str, conditions: dict[str, Any] | None = None) -> list[tuple]:
         """
@@ -57,10 +55,10 @@ class PsycopgSyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для выборки
         """
         select_query = self._sql_creator.make_select_query(table, list(conditions.keys()))
-        with self._connection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(select_query, list(conditions.values()))
-                return cursor.fetchall()
+        connection = self.connection_proxy.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(select_query, list(conditions.values()))
+            return cursor.fetchall()
 
     def update(self, table: str, data: dict[str, Any], conditions: dict[str, Any]) -> None:
         """
@@ -72,10 +70,9 @@ class PsycopgSyncRepository(BaseRepository):
         update_query = self._sql_creator.make_update_query(
             table, list(data.keys()), list(conditions.keys())
         )
-        with self._connection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(update_query, list(data.values()) + list(conditions.values()))
-                conn.commit()
+        connection = self.connection_proxy.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(update_query, list(data.values()) + list(conditions.values()))
 
     def delete(self, table: str, conditions: dict[str, Any]) -> None:
         """
@@ -84,10 +81,9 @@ class PsycopgSyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для удаления
         """
         delete_query = self._sql_creator.make_delete_query(table, list(conditions.keys()))
-        with self._connection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(delete_query, list(conditions.values()))
-                conn.commit()
+        connection = self.connection_proxy.connect()
+        with connection.cursor() as cursor:
+            cursor.execute(delete_query, list(conditions.values()))
 
 
 class PsycopgAsyncRepository(BaseRepository):
@@ -97,15 +93,15 @@ class PsycopgAsyncRepository(BaseRepository):
 
     def __init__(
         self,
-        connection: PsycopgAsyncConnection,
+        connection_proxy: PsycopgAsyncConnectionProxy,
         sql_creator: BaseRawSQLCreator,
     ) -> None:
         """
         Инициализировать переменные
-        :param connection: объект соединения psycopg
+        :param connection_proxy: объект асинхронного прокси-соединения psycopg
         :param sql_creator: объект класса для создания sql query
         """
-        self._connection = connection
+        self.connection_proxy = connection_proxy
         self._sql_creator = sql_creator
 
     async def create(self, table: str, data: dict[str, Any]) -> None:
@@ -115,10 +111,9 @@ class PsycopgAsyncRepository(BaseRepository):
         :param data: словарь с данными для создания записи
         """
         insert_query = self._sql_creator.make_insert_query(table, list(data.keys()))
-        async with await self._connection.get_connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(insert_query, list(data.values()))
-                await conn.commit()
+        connection = await self.connection_proxy.connect()
+        async with connection.cursor() as cursor:
+            await cursor.execute(insert_query, list(data.values()))
 
     async def retrieve(self, table: str, conditions: dict[str, Any]) -> tuple:
         """
@@ -127,10 +122,10 @@ class PsycopgAsyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для выборки
         """
         select_query = self._sql_creator.make_select_query(table, list(conditions.keys()))
-        async with await self._connection.get_connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(select_query, list(conditions.values()))
-                return await cursor.fetchone()
+        connection = await self.connection_proxy.connect()
+        async with connection.cursor() as cursor:
+            await cursor.execute(select_query, list(conditions.values()))
+            return await cursor.fetchone()
 
     async def list(self, table: str, conditions: dict[str, Any] | None = None) -> list[tuple]:
         """
@@ -139,10 +134,10 @@ class PsycopgAsyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для выборки
         """
         select_query = self._sql_creator.make_select_query(table, list(conditions.keys()))
-        async with await self._connection.get_connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(select_query, list(conditions.values()))
-                return await cursor.fetchall()
+        connection = await self.connection_proxy.connect()
+        async with connection.cursor() as cursor:
+            await cursor.execute(select_query, list(conditions.values()))
+            return await cursor.fetchall()
 
     async def update(self, table: str, data: dict[str, Any], conditions: dict[str, Any]) -> None:
         """
@@ -154,10 +149,9 @@ class PsycopgAsyncRepository(BaseRepository):
         update_query = self._sql_creator.make_update_query(
             table, list(data.keys()), list(conditions.keys())
         )
-        async with await self._connection.get_connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(update_query, list(data.values()) + list(conditions.values()))
-                await conn.commit()
+        connection = await self.connection_proxy.connect()
+        async with connection.cursor() as cursor:
+            await cursor.execute(update_query, list(data.values()) + list(conditions.values()))
 
     async def delete(self, table: str, conditions: dict[str, Any]) -> None:
         """
@@ -166,7 +160,6 @@ class PsycopgAsyncRepository(BaseRepository):
         :param conditions: словарь с фильтрами для удаления
         """
         delete_query = self._sql_creator.make_delete_query(table, list(conditions.keys()))
-        async with await self._connection.get_connection() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute(delete_query, list(conditions.values()))
-                await conn.commit()
+        connection = await self.connection_proxy.connect()
+        async with connection.cursor() as cursor:
+            await cursor.execute(delete_query, list(conditions.values()))

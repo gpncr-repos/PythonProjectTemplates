@@ -1,8 +1,7 @@
 import fastapi
 import uvicorn
-
-from config import app_config
-from config import uvicorn_config
+from config import app_config, uvicorn_config
+from tools.di_containers.app_container import ApplicationContainer
 from web.middlewares import logger_middleware
 from web.tools import router_registrator
 
@@ -20,6 +19,8 @@ def create_app() -> fastapi.FastAPI:
         debug=True if app_config.okd_stage == "DEV" else False,
         default_response_class=fastapi.responses.JSONResponse,
     )
+    container = ApplicationContainer()
+    fastapi_app.container = container
 
     return fastapi_app
 
