@@ -172,6 +172,7 @@ class LibsConfig:
             Config.template_path / "storage" / "psycopg",
             Config.template_path / "repositories" / "psycopg_repository.py",
             Config.template_path / "repositories" / "sql_tools.py",
+            Config.template_path / "uows" / "psycopg_uow.py",
             Config.template_path / "tools" / "di_containers" / "postgres_container.py",
         ],
         "compose": Config.template_path / "to_compose" / "postgres.yaml",
