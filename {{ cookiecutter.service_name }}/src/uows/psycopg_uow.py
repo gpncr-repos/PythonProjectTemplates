@@ -1,9 +1,8 @@
-# thirdparty
-import psycopg
+from __future__ import annotations  # no qa
 
 # project
-from interfaces import base_uow
-from repositories.psycopg_repository import PsycopgAsyncRepository, PsycopgSyncRepository
+from interfaces import base_postgres_cursor_proxy, base_uow
+from repositories.raw_postgres_repository import PsycopgSyncRepository
 
 
 class PsycopgSyncUOW(base_uow.BaseSyncUOW):
@@ -11,72 +10,37 @@ class PsycopgSyncUOW(base_uow.BaseSyncUOW):
     Синхронный UOW для работы с синхронными Psycopg-репозиториями
     """
 
-    def __init__(self, repository: PsycopgSyncRepository):
+    def __init__(self, repository: PsycopgSyncRepository) -> None:
         """
         Инициализировать переменные
         :param repository: синхронный репозиторий Psycopg
         """
+
         self.repository = repository
+        self._cursor_proxy: base_postgres_cursor_proxy.BasePsycopgCursorProxy | None = None
         super().__init__()
 
-    def __exit__(self, *args, **kwargs) -> None:
+    def __enter__(self) -> PsycopgSyncUOW:
         """
-        Выйти из контекстного менеджера
+        Войти в контекстный менеджер
+        :return: объект UOW
         """
-        try:
-            self.commit()
-        except psycopg.Error:
-            self.rollback()
+
+        self._cursor_proxy = self.repository.connection_proxy.connect()
+
+        return self
 
     def commit(self) -> None:
         """
         Сделать коммит изменений
         """
 
-        self.repository.connection_proxy.commit()
+        self._cursor_proxy.cursor.connection.commit()
 
     def rollback(self) -> None:
         """
         Сделать откат изменений
         """
 
-        self.repository.connection_proxy.rollback()
+        self._cursor_proxy.cursor.connection.rollback()
         self.repository.connection_proxy.disconnect()
-
-
-class PsycopgAsyncUOW(base_uow.BaseAsyncUOW):
-    """
-    Acинхронный UOW для работы с aсинхронными Psycopg-репозиториями
-    """
-
-    def __init__(self, repository: PsycopgAsyncRepository):
-        """
-        Инициализировать переменные
-        :param repository: синхронный репозиторий Psycopg
-        """
-        self.repository = repository
-        super().__init__()
-
-    async def __aexit__(self, *args, **kwargs) -> None:
-        """
-        Выйти из контекстного менеджера
-        """
-        try:
-            await self.commit()
-        except psycopg.Error:
-            await self.rollback()
-
-    async def commit(self) -> None:
-        """
-        Сделать коммит изменений
-        """
-
-        await self.repository.connection_proxy.commit()
-
-    async def rollback(self) -> None:
-        """
-        Сделать откат изменений
-        """
-
-        await self.repository.connection_proxy.rollback()
-        await self.repository.connection_proxy.disconnect()
