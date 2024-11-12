@@ -30,7 +30,7 @@ class PsycopgAsyncContainer(containers.DeclarativeContainer):
     """
 
     # указать связанные модули
-    wiring_config = containers.WiringConfiguration(packages=["web.entrypoints"])
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     conn_proxy = providers.Factory(psycopg_proxy.PsycopgAsyncConnectionProxy, pg_config)
     sql_creator = providers.Factory(PsycopgRawSQLCreator)
