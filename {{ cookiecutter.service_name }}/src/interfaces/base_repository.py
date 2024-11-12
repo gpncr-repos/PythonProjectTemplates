@@ -1,5 +1,6 @@
 # stdlib
 import abc
+from typing import Iterable
 
 
 class BaseRepository(abc.ABC):
@@ -24,7 +25,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def list(self, *args, **kwargs) -> list[any]:
+    def list(self, *args, **kwargs) -> Iterable[any]:
         """
         Получить список записей
         """
