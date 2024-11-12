@@ -10,6 +10,14 @@ class BasePostgresCursorProxy(abc.ABC):
     """
 
     @abc.abstractmethod
+    def init_cursor(self, *args, **kwargs) -> None:
+        """
+        Инициализировать объект курсора
+        """
+
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def retrieve_many(self, *args, **kwargs) -> any:
         """
         Получить записи из БД
@@ -23,15 +31,20 @@ class BasePsycopgCursorProxy(BasePostgresCursorProxy):
     Базовый прокси-класс для курсора psycopg
     """
 
-    cursor: psycopg.Cursor
-
-    def __init__(self, connection: psycopg.Connection) -> None:
+    def __init__(self) -> None:
         """
         Инициализировать переменные
+        """
+
+        self.cursor: psycopg.Cursor | None = None
+
+    def init_cursor(self, connection: psycopg.Connection) -> None:
+        """
+        Инициализировать курсор
         :param connection: объект соединения
         """
 
-        super().__init__(connection)
+        super().init_cursor(connection)
 
     def retrieve_many(self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int) -> any:
         """

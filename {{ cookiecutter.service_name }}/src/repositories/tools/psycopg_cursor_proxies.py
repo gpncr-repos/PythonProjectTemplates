@@ -10,14 +10,13 @@ class ClientPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
     Прокси-класс для клиентского курсора psycopg
     """
 
-    def __init__(self, connection: psycopg.Connection) -> None:
+    def init_cursor(self, connection: psycopg.Connection) -> None:
         """
-        Инициализировать переменные
+        Инициализировать курсор
         :param connection: объект соединения
         """
 
         self.cursor = psycopg.ClientCursor(connection)
-        super().__init__(connection)
 
     def retrieve_many(
         self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int
@@ -42,14 +41,13 @@ class ServerPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
     Прокси-класс для серверного курсора psycopg
     """
 
-    def __init__(self, connection: psycopg.Connection) -> None:
+    def init_cursor(self, connection: psycopg.Connection) -> None:
         """
-        Инициализировать переменные
+        Инициализировать курсор
         :param connection: объект соединения
         """
 
         self.cursor = psycopg.ServerCursor(connection, "test_cursor")
-        super().__init__(connection)
 
     def retrieve_many(
         self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int
