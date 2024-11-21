@@ -1,3 +1,5 @@
+import uuid
+
 # thirdparty
 import dotenv
 from pydantic import Field, PostgresDsn
@@ -17,30 +19,24 @@ class PostgresConfig(BaseSettings):
     port: int = Field(alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД")
     db_name: str = Field(alias="POSTGRES_DB", description="Имя БД")
     connection_pool_size: int = Field(default=10, description="Размер пула соединений")
-    server_side_cursor_name: str = Field(
-        default="test_cursor", description="Название server-side курсора"
-    )
 
     @property
-    def psycopg_dsn(self) -> PostgresDsn:
+    def cursor_name_salt(self) -> str:
         """
-        Получение url для синхронного подключения к Postgres через psycopg
-        :return: url
+        Сгенерировать соль для названия server-side курсора
         """
 
-        return self._build_dsn(
-            scheme="postgresql",
-        )
+        return str(uuid.uuid4())
 
-    def _build_dsn(self, scheme: str) -> PostgresDsn:
+    @property
+    def postgres_dsn(self) -> PostgresDsn:
         """
-        Сборщик url
-        :parm scheme: схема для синхронной или асинхронной работы
-        :return: url
+        Получение url для подключения к Postgres
+        :return: dsn
         """
 
         return PostgresDsn.build(
-            scheme=scheme,
+            scheme="postgresql",
             username=self.user,
             password=self.password,
             host=self.host,
