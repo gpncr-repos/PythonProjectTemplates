@@ -1,7 +1,7 @@
 import abc
 
+import asyncpg
 import psycopg
-from psycopg import sql
 
 
 class BasePostgresCursorProxy(abc.ABC):
@@ -46,7 +46,42 @@ class BasePsycopgCursorProxy(BasePostgresCursorProxy):
 
         super().init_cursor(connection)
 
-    def retrieve_many(self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int) -> any:
+    def retrieve_many(
+        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+    ) -> any:
+        """
+        Получить записи из БД
+        :param sql_statement: sql-запрос
+        :param sql_params: значения для вставки в sql-запрос
+        :param rows_count: количество строк для получения из БД
+        """
+
+        super().retrieve_many()
+
+
+class BaseAsyncpgCursorProxy(BasePostgresCursorProxy):
+    """
+    Базовый прокси-класс для курсора asyncpg
+    """
+
+    def __init__(self) -> None:
+        """
+        Инициализировать переменные
+        """
+
+        self.cursor: asyncpg.Connection | None = None
+
+    def init_cursor(self, connection: asyncpg.Connection) -> None:
+        """
+        Инициализировать курсор
+        :param connection: объект соединения
+        """
+
+        super().init_cursor(connection)
+
+    async def retrieve_many(
+        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+    ) -> any:
         """
         Получить записи из БД
         :param sql_statement: sql-запрос
