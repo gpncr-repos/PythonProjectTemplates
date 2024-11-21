@@ -1,8 +1,11 @@
 from typing import Iterable
 
 import psycopg
+from config import app_config, pg_config
 from interfaces import base_postgres_cursor_proxy
-from psycopg import sql
+
+app_config = app_config.app_config
+pg_config = pg_config.pg_config
 
 
 class ClientPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy):
@@ -19,7 +22,7 @@ class ClientPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         self.cursor = psycopg.ClientCursor(connection)
 
     def retrieve_many(
-        self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int
+        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД
@@ -47,10 +50,12 @@ class ServerPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         :param connection: объект соединения
         """
 
-        self.cursor = psycopg.ServerCursor(connection, "test_cursor")
+        self.cursor = psycopg.ServerCursor(
+            connection, app_config.app_name + pg_config.cursor_name_salt
+        )
 
     def retrieve_many(
-        self, sql_statement: sql.SQL, sql_params: list[any], rows_count: int
+        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД
