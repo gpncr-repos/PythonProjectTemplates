@@ -2,7 +2,7 @@ from __future__ import annotations  # no qa
 
 # project
 from interfaces import base_postgres_cursor_proxy, base_uow
-from repositories.raw_postgres_repository import PsycopgSyncRepository
+from repositories import psycopg_repository
 
 
 class PsycopgSyncUOW(base_uow.BaseSyncUOW):
@@ -10,7 +10,7 @@ class PsycopgSyncUOW(base_uow.BaseSyncUOW):
     Синхронный UOW для работы с синхронными Psycopg-репозиториями
     """
 
-    def __init__(self, repository: PsycopgSyncRepository) -> None:
+    def __init__(self, repository: psycopg_repository.PsycopgSyncRepository) -> None:
         """
         Инициализировать переменные
         :param repository: синхронный репозиторий Psycopg
