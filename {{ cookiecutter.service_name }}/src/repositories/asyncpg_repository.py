@@ -28,11 +28,11 @@ class AsyncpgRepository(base_repository.BaseRepository):
 
         return await self.connection_proxy.connect()
 
-    async def _execute_query(self, query: str, params: dict | None = None) -> any:
+    async def _execute_query(self, query: str, params: list | None = None) -> any:
         """
         Выполнить запрос с параметрами
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         """
 
         connection = await self._get_connection()
@@ -41,39 +41,57 @@ class AsyncpgRepository(base_repository.BaseRepository):
         if not params:
             await cursor.execute(query)
         else:
-            await cursor.execute(query, params)
+            await cursor.execute(query, *params)
 
         return cursor
 
-    async def create(self, query: str, params: dict | None = None) -> None:
+    async def create(self, query: str, params: list | None = None) -> None:
         """
         Добавить запись в таблицу
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         """
 
         await self._execute_query(query, params)
 
-    async def retrieve(self, query: str, params: dict | None = None) -> tuple:
+    async def retrieve(self, query: str, params: list | None = None) -> tuple:
         """
         Получить запись из таблицы
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами
         :return: запись из БД
         """
 
         connection = await self._get_connection()
         cursor = connection.cursor
 
-        return await cursor.fetchrow(query, params)
+        return await cursor.fetchrow(query, *params)
+
+    async def update(self, query: str, params: list | None = None) -> None:
+        """
+        Обновить записи в таблице
+        :param query: запрос
+        :param params: список с параметрами
+        """
+
+        await self._execute_query(query, params)
+
+    async def delete(self, query: str, params: list | None = None) -> None:
+        """
+        Удалить записи из таблицы
+        :param query: запрос
+        :param params: список с параметрами
+        """
+
+        await self._execute_query(query, params)
 
     async def list(
-        self, query: str, rows_count: int, params: dict | None = None
+        self, query: str, rows_count: int, params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить список записей из таблицы
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами
         :param rows_count: количество строк для получения из БД
         :return: итерируемый объект, содержащий список записей
         """
@@ -81,21 +99,3 @@ class AsyncpgRepository(base_repository.BaseRepository):
         connection = await self._get_connection()
 
         return connection.retrieve_many(query, rows_count, params)
-
-    async def update(self, query: str, params: dict | None = None) -> None:
-        """
-        Обновить записи в таблице
-        :param query: запрос
-        :param params: словарь с данными для создания записи
-        """
-
-        await self._execute_query(query, params)
-
-    async def delete(self, query: str, params: dict | None = None) -> None:
-        """
-        Удалить записи из таблицы
-        :param query: запрос
-        :param params: словарь с данными для создания записи
-        """
-
-        await self._execute_query(query, params)
