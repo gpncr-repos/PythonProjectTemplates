@@ -1,6 +1,3 @@
-# thirdparty
-import psycopg_pool
-
 # project
 from config import pg_config
 from dependency_injector import containers, providers
@@ -9,6 +6,8 @@ from repositories import asyncpg_repository, psycopg_repository
 from storage.raw_postgres import connection_proxy
 from tools.factories import asyncpg_connection_pool_factory
 from uows import asyncpg_uow, psycopg_uow
+
+from test_service.src.tools.factories import psycopg_connection_pool_factory
 
 config = pg_config.pg_config
 
@@ -21,13 +20,14 @@ class PsycopgSyncContainer(containers.DeclarativeContainer):
     # указать связанные модули
     wiring_config = containers.WiringConfiguration(modules=None)
 
-    dsn = providers.Factory(str, config.postgres_dsn)
-    connection_pool = providers.Singleton(
-        psycopg_pool.ConnectionPool, dsn, config.connection_pool_size
+    connection_pool_factory = providers.Singleton(
+        psycopg_connection_pool_factory.PsycopgPoolFactory,
+        config.postgres_dsn,
+        config.connection_pool_size,
     )
     cursor_type = providers.AbstractFactory(cursor_proxy.BasePsycopgCursorProxy)
     connection_proxy = providers.Factory(
-        connection_proxy.PsycopgConnectionProxy, connection_pool, cursor_type
+        connection_proxy.PsycopgConnectionProxy, connection_pool_factory, cursor_type
     )
     psycopg_repository = providers.Factory(
         psycopg_repository.PsycopgSyncRepository, connection_proxy

@@ -18,7 +18,7 @@ class ClientAsyncpgCursorProxy(base_postgres_cursor_proxy.BaseAsyncpgCursorProxy
         self.cursor = connection
 
     async def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД
@@ -27,7 +27,7 @@ class ClientAsyncpgCursorProxy(base_postgres_cursor_proxy.BaseAsyncpgCursorProxy
         :param rows_count: количество строк для получения из БД
         """
 
-        result = await self.cursor.fetch(sql_statement, sql_params)
+        result = await self.cursor.fetch(sql_statement, *sql_params)
 
         if rows_count:
             return result[:rows_count]
@@ -49,7 +49,7 @@ class ServerAsyncpgCursorProxy(base_postgres_cursor_proxy.BaseAsyncpgCursorProxy
         self.cursor = connection
 
     async def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД
@@ -59,7 +59,7 @@ class ServerAsyncpgCursorProxy(base_postgres_cursor_proxy.BaseAsyncpgCursorProxy
         """
 
         if sql_params:
-            cursor = self.cursor.cursor(sql_statement, sql_params, prefetch=rows_count)
+            cursor = self.cursor.cursor(sql_statement, *sql_params, prefetch=rows_count)
         else:
             cursor = self.cursor.cursor(sql_statement, prefetch=rows_count)
 

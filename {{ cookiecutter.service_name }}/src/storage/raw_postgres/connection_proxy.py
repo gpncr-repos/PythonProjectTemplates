@@ -6,6 +6,8 @@ import psycopg_pool
 from interfaces import base_postgres_cursor_proxy, base_proxy
 from tools.factories import asyncpg_connection_pool_factory
 
+from test_service.src.tools.factories import psycopg_connection_pool_factory
+
 
 class PsycopgConnectionProxy(base_proxy.ConnectionProxy):
     """
@@ -14,23 +16,26 @@ class PsycopgConnectionProxy(base_proxy.ConnectionProxy):
 
     def __init__(
         self,
-        connection_pool: psycopg_pool,
+        connection_pool_factory: psycopg_connection_pool_factory.PsycopgPoolFactory,
         cursor_proxy: base_postgres_cursor_proxy.BasePsycopgCursorProxy,
     ) -> None:
         """
         Инициализировать переменные
-        :param connection_pool: пул соединений
+        :param connection_pool_factory: фабрика пулов соединений
         :param cursor_proxy: прокси для курсора
         """
 
-        self._connection_pool = connection_pool
+        self._connection_pool_factory = connection_pool_factory
         self._cursor_proxy = cursor_proxy
+        self._connection_pool: psycopg_pool.ConnectionPool | None = None
 
     def connect(self) -> base_postgres_cursor_proxy.BasePsycopgCursorProxy:
         """
         Подключиться к БД
         :return: объект соединения
         """
+        if self._connection_pool is None:
+            self._connection_pool = self._connection_pool_factory.create()
 
         if not self._cursor_proxy.cursor:
             connection = self._connection_pool.getconn()

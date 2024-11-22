@@ -22,7 +22,7 @@ class ClientPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         self.cursor = psycopg.ClientCursor(connection)
 
     def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД
@@ -55,7 +55,7 @@ class ServerPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         )
 
     def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД

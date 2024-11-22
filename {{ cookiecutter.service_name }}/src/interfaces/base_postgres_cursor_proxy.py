@@ -47,7 +47,7 @@ class BasePsycopgCursorProxy(BasePostgresCursorProxy):
         super().init_cursor(connection)
 
     def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> any:
         """
         Получить записи из БД
@@ -80,7 +80,7 @@ class BaseAsyncpgCursorProxy(BasePostgresCursorProxy):
         super().init_cursor(connection)
 
     async def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: dict | None = None
+        self, sql_statement: str, rows_count: int, sql_params: list | None = None
     ) -> any:
         """
         Получить записи из БД

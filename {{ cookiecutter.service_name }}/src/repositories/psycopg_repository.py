@@ -28,11 +28,11 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         return self.connection_proxy.connect()
 
-    def _execute_query(self, query: str, params: dict | None = None) -> any:
+    def _execute_query(self, query: str, params: list | None = None) -> any:
         """
         Выполнить запрос
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         """
 
         cursor = self._get_connection().cursor
@@ -40,50 +40,51 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         return cursor
 
-    def create(self, query: str, params: dict | None = None) -> None:
+    def create(self, query: str, params: list | None = None) -> None:
         """
         Добавить запись в таблицу
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         """
 
         self._execute_query(query, params)
 
-    def retrieve(self, query: str, params: dict | None = None) -> tuple:
+    def retrieve(self, query: str, params: list | None = None) -> tuple:
         """
         Получить запись из таблицы
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         :return: запись из БД
         """
 
         return self._execute_query(query, params).fetchone()
 
-    def list(self, query: str, rows_count: int, params: dict | None = None) -> Iterable[tuple]:
+    def update(self, query: str, params: list | None = None) -> None:
+        """
+        Обновить записи в таблице
+        :param query: запрос
+        :param params: список с параметрами запроса
+        """
+
+        self._execute_query(query, params)
+
+    def delete(self, query: str, params: list | None = None) -> None:
+        """
+        Удалить записи из таблицы
+        :param query: запрос
+        :param params: список с параметрами запроса
+        """
+
+        self._execute_query(query, params)
+
+    def list(self, query: str, rows_count: int, params: list | None = None) -> Iterable[tuple]:
         """
         Получить список записей из таблицы
         :param query: запрос
-        :param params: словарь с данными для создания записи
+        :param params: список с параметрами запроса
         :param rows_count: количество строк для получения из БД
         :return: итерируемый объект, содержащий список записей
         """
 
-        return self._execute_query(query, params).retrieve_many(query, rows_count, params)
-
-    def update(self, query: str, params: dict | None = None) -> None:
-        """
-        Обновить записи в таблице
-        :param query: запрос
-        :param params: словарь с данными для создания записи
-        """
-
-        self._execute_query(query, params)
-
-    def delete(self, query: str, params: dict | None = None) -> None:
-        """
-        Удалить записи из таблицы
-        :param query: запрос
-        :param params: словарь с данными для создания записи
-        """
-
-        self._execute_query(query, params)
+        connection = self._get_connection()
+        return connection.retrieve_many(query, rows_count, params)
