@@ -9,7 +9,7 @@ from storage.raw_postgres import connection_proxy
 
 class AsyncpgRepository(base_repository.BaseRepository):
     """
-    Синхронный репозиторий БД Postgres через соединение asyncpg
+    Асинхронный репозиторий БД Postgres через соединение asyncpg
     """
 
     def __init__(self, connection_proxy_: connection_proxy.AsyncpgConnectionProxy) -> None:
