@@ -178,10 +178,33 @@ class LibsConfig:
         "dependencies": {
             "asyncpg": "^0.29.0",
             "psycopg2": "^2.9.0",
-            "psycopg": "^3.2.0",
-            "psycopg-pool": "^3.2.0",
+        },
+    }
+    sqlalchemy = {
+        "modules": [
+            Config.template_path / "storage" / "sqlalchemy",
+        ],
+        "dependencies": {
             "sqlalchemy": "^2.0.0",
             "alembic": "^1.13.0",
+        },
+    }
+    psycopg = {
+        "modules": [
+            Config.template_path / "storage" / "raw_postgres",
+            Config.template_path / "repositories" / "asyncpg_repository.py",
+            Config.template_path / "repositories" / "psycopg_repository.py",
+            Config.template_path / "repositories" / "tools" / "sql_tools.py",
+            Config.template_path / "uows" / "asyncpg_uow.py",
+            Config.template_path / "uows" / "psycopg_uow.py",
+            Config.template_path / "tools" / "di_containers" / "raw_postgres_container.py",
+            Config.template_path / "tools" / "factories" / "asyncpg_connection_pool_factory.py",
+            Config.template_path / "tools" / "factories" / "psycopg_connection_pool_factory.py",
+        ],
+        "dependencies": {
+            "asyncpg": "^0.29.0",
+            "psycopg": "^3.2.0",
+            "psycopg-pool": "^3.2.0",
         },
     }
     redis = {
@@ -250,6 +273,8 @@ def resolve_libs() -> None:
 
     libs_to_add = {
         "postgres": "{{cookiecutter.add_postgres}}" == "True",
+        "sqlalchemy": "{{cookiecutter.add_sql_alchemy}}" == "True",
+        "psycopg": "{{cookiecutter.add_raw_psycopg}}" == "True",
         "redis": "{{cookiecutter.add_redis}}" == "True",
         "kafka": "{{cookiecutter.add_kafka}}" == "True",
         "rabbitmq": "{{cookiecutter.add_rabbitmq}}" == "True",
