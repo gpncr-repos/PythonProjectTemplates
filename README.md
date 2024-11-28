@@ -27,7 +27,7 @@
 - Автоматическая генерация docker-compose
 - Асинхронная Kafka
 - Асинхронный RabbitMQ
-- Postgres через psycopg
+- Работа с Postgres через raw sql
 
 ## RoadMap
 

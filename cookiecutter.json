@@ -6,9 +6,8 @@
   "service_port": 8080,
   "okd_stage": ["DEV", "PROD"],
   "async_fastapi": ["auto", "wsgi"],
-  "add_postgres": false,
   "add_sql_alchemy": false,
-  "add_raw_psycopg": false,
+  "add_raw_postgres": false,
   "add_redis": false,
   "add_kafka": false,
   "add_rabbitmq": false
