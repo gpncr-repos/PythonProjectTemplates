@@ -36,6 +36,7 @@ class BasePsycopgCursorProxy(BasePostgresCursorProxy):
         Инициализировать переменные
         """
 
+        self._connection: psycopg.Connection | None = None
         self.cursor: psycopg.Cursor | None = None
 
     def init_cursor(self, connection: psycopg.Connection) -> None:

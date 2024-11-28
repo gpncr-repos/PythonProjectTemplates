@@ -50,9 +50,8 @@ class ServerPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         :param connection: объект соединения
         """
 
-        self.cursor = psycopg.ServerCursor(
-            connection, app_config.app_name + pg_config.cursor_name_salt
-        )
+        self._connection = connection
+        self.cursor = psycopg.ClientCursor(connection)
 
     def retrieve_many(
         self, sql_statement: str, rows_count: int, sql_params: list | None = None
@@ -64,10 +63,9 @@ class ServerPsycopgCursorProxy(base_postgres_cursor_proxy.BasePsycopgCursorProxy
         :param rows_count: количество строк для получения из БД
         """
 
-        self.cursor.execute(sql_statement, sql_params)
+        with self._connection.cursor(name=app_config.app_name + pg_config.cursor_name_salt) as server_side_cursor:
+            while rows := server_side_cursor.fetchmany(rows_count):
+                if not rows:
+                    break
 
-        while rows := self.cursor.fetchmany(rows_count):
-            if not rows:
-                break
-
-            yield rows
+                yield rows
