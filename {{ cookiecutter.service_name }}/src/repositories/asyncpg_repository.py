@@ -1,4 +1,5 @@
 # stdlib
+import inspect
 from typing import Iterable
 
 # project
@@ -97,5 +98,9 @@ class AsyncpgRepository(base_repository.BaseRepository):
         """
 
         connection = await self._get_connection()
+        result = connection.retrieve_many(query, rows_count, params)
+
+        if inspect.iscoroutine(result):
+            return await result
 
         return connection.retrieve_many(query, rows_count, params)
