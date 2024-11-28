@@ -37,7 +37,7 @@ delete_psy_sql = """
 select_sql = """
     SELECT *
     FROM users u
-    WHERE u.name is not $1
+    WHERE u.name != $1
 """
 
 select_psy_sql = """
