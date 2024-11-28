@@ -164,34 +164,22 @@ class LibsConfig:
     docker-compose файла, а также необходимыми зависимостями
     """
 
-    postgres = {
+    sqlalchemy = {
         "modules": [
             Config.template_path / "config" / "pg_config.py",
             Config.template_path / "storage" / "sqlalchemy",
             Config.template_path.parent / "docs" / "postgres-sqlalchemy.md",
-            Config.template_path / "storage" / "psycopg",
-            Config.template_path / "repositories" / "psycopg_repository.py",
-            Config.template_path / "repositories" / "sql_tools.py",
-            Config.template_path / "uows" / "psycopg_uow.py",
-            Config.template_path / "tools" / "di_containers" / "postgres_container.py",
-        ],
-        "compose": Config.template_path / "to_compose" / "postgres.yaml",
-        "dependencies": {
-            "asyncpg": "^0.29.0",
-            "psycopg2": "^2.9.0",
-        },
-    }
-    sqlalchemy = {
-        "modules": [
-            Config.template_path / "storage" / "sqlalchemy",
         ],
         "dependencies": {
             "sqlalchemy": "^2.0.0",
             "alembic": "^1.13.0",
+            "asyncpg": "^0.29.0",
+            "psycopg2": "^2.9.0",
         },
     }
-    psycopg = {
+    raw_postgres = {
         "modules": [
+            Config.template_path / "config" / "pg_config.py",
             Config.template_path / "storage" / "raw_postgres",
             Config.template_path / "repositories" / "asyncpg_repository.py",
             Config.template_path / "repositories" / "psycopg_repository.py",
@@ -276,9 +264,8 @@ def resolve_libs() -> None:
     """
 
     libs_to_add = {
-        "postgres": "{{cookiecutter.add_postgres}}" == "True",
         "sqlalchemy": "{{cookiecutter.add_sql_alchemy}}" == "True",
-        "psycopg": "{{cookiecutter.add_raw_psycopg}}" == "True",
+        "raw_postgres": "{{cookiecutter.add_raw_postgres}}" == "True",
         "redis": "{{cookiecutter.add_redis}}" == "True",
         "kafka": "{{cookiecutter.add_kafka}}" == "True",
         "rabbitmq": "{{cookiecutter.add_rabbitmq}}" == "True",

@@ -13,12 +13,16 @@ class PostgresConfig(BaseSettings):
     Класс настроек для БД
     """
 
-    user: str = Field(alias="POSTGRES_USER", description="Имя пользователя БД")
-    password: str = Field(alias="POSTGRES_PASSWORD", description="Пароль пользователя БД")
-    host: str = Field(alias="POSTGRES_HOST", description="Хост подключения к БД")
+    user: str = Field(alias="POSTGRES_USER", description="Имя пользователя БД", default="admin")
+    password: str = Field(
+        alias="POSTGRES_PASSWORD", description="Пароль пользователя БД", default="admin"
+    )
+    host: str = Field(
+        alias="POSTGRES_HOST", description="Хост подключения к БД", default="localhost"
+    )
     port: int = Field(alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД")
-    db_name: str = Field(alias="POSTGRES_DB", description="Имя БД")
-    connection_pool_size: int = Field(default=10, description="Размер пула соединений")
+    db_name: str = Field(alias="POSTGRES_DB", description="Имя БД", default="calculator")
+    connection_pool_size: int = Field(description="Размер пула соединений")
 
     @property
     def cursor_name_salt(self) -> str:
