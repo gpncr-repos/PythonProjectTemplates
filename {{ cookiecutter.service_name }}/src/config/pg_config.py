@@ -22,7 +22,7 @@ class PostgresConfig(BaseSettings):
     )
     port: int = Field(alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД")
     db_name: str = Field(alias="POSTGRES_DB", description="Имя БД", default="calculator")
-    connection_pool_size: int = Field(description="Размер пула соединений")
+    connection_pool_size: int = Field(alias="POOL_SIZE", description="Размер пула соединений")
 
     @property
     def cursor_name_salt(self) -> str:
