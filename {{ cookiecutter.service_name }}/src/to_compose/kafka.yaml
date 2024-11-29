@@ -4,7 +4,7 @@ services:
   kafka:
     # Kafka как Controller без Zookeeper
     image: bitnami/kafka:latest
-    container_name: kafka
+    container_name: {{cookiecutter.service_name}}.kafka
     ports:
       - 9092:9092
     environment:
@@ -31,12 +31,12 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
-    container_name: kafka-ui
+    container_name: {{cookiecutter.service_name}}.kafka-ui
     ports:
       - 8080:8080
     restart: always
     environment:
       KAFKA_CLUSTERS_0_NAME: lkorDA4qT6W1K_dk0LHvtg
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9094
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: {{cookiecutter.service_name}}.kafka:9094
     depends_on:
-      - kafka
+      - {{cookiecutter.service_name}}.kafka

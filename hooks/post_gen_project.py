@@ -111,7 +111,7 @@ class FileManager:
 
 class DockerComposeMerger:
     def __init__(self):
-        self.files_to_compose = []
+        self.files_to_compose = set()
 
     def _merge_docker_compose(self) -> dict:
         """
@@ -170,6 +170,7 @@ class LibsConfig:
             Config.template_path / "storage" / "sqlalchemy",
             Config.template_path.parent / "docs" / "postgres-sqlalchemy.md",
         ],
+        "compose": Config.template_path / "to_compose" / "postgres.yaml",
         "dependencies": {
             "sqlalchemy": "^2.0.0",
             "alembic": "^1.13.0",
@@ -190,6 +191,7 @@ class LibsConfig:
             Config.template_path / "tools" / "factories" / "asyncpg_connection_pool_factory.py",
             Config.template_path / "tools" / "factories" / "psycopg_connection_pool_factory.py",
         ],
+        "compose": Config.template_path / "to_compose" / "postgres.yaml",
         "dependencies": {
             "asyncpg": "^0.29.0",
             "psycopg": "^3.2.0",
@@ -279,11 +281,11 @@ def resolve_libs() -> None:
         else:
             compose_path = getattr(LibsConfig, lib).get("compose")
             if compose_path:
-                compose_merger.files_to_compose.append(compose_path)
+                compose_merger.files_to_compose.add(compose_path)
             dependencies = getattr(LibsConfig, lib)["dependencies"]
             poetry_creator.add_dependency(dependencies)
 
-    compose_merger.files_to_compose.append(Config.template_path / "to_compose" / "app.yaml")
+    compose_merger.files_to_compose.add(Config.template_path / "to_compose" / "app.yaml")
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
 
     file_manager.paths_to_remove.append(Config.template_path / "to_compose")
