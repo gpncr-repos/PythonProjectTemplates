@@ -184,7 +184,6 @@ class LibsConfig:
             Config.template_path / "storage" / "raw_postgres",
             Config.template_path / "repositories" / "asyncpg_repository.py",
             Config.template_path / "repositories" / "psycopg_repository.py",
-            Config.template_path / "repositories" / "tools" / "sql_tools.py",
             Config.template_path / "uows" / "asyncpg_uow.py",
             Config.template_path / "uows" / "psycopg_uow.py",
             Config.template_path / "tools" / "di_containers" / "raw_postgres_container.py",
