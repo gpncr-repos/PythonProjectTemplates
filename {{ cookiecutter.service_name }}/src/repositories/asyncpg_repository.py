@@ -103,4 +103,4 @@ class AsyncpgRepository(base_repository.BaseRepository):
         if inspect.iscoroutine(result):
             return await result
 
-        return connection.retrieve_many(query, rows_count, params)
+        return result

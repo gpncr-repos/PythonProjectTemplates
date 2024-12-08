@@ -7,7 +7,7 @@ from interfaces import base_postgres_cursor_proxy, base_uow
 from repositories import asyncpg_repository
 
 
-class AsyncpgUOW(base_uow.BaseSyncUOW):
+class AsyncpgUOW(base_uow.BaseAsyncUOW):
     """
     Синхронный UOW для работы с синхронными Psycopg-репозиториями
     """
