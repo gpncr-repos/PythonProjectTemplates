@@ -181,6 +181,7 @@ class LibsConfig:
     raw_postgres = {
         "modules": [
             Config.template_path / "config" / "pg_config.py",
+            Config.template_path / "interfaces" / "base_postgres_cursor_proxy.py",
             Config.template_path / "storage" / "raw_postgres",
             Config.template_path / "repositories" / "asyncpg_repository.py",
             Config.template_path / "repositories" / "psycopg_repository.py",
@@ -189,6 +190,8 @@ class LibsConfig:
             Config.template_path / "tools" / "di_containers" / "raw_postgres_container.py",
             Config.template_path / "tools" / "factories" / "asyncpg_connection_pool_factory.py",
             Config.template_path / "tools" / "factories" / "psycopg_connection_pool_factory.py",
+            Config.template_path.parent / "docs" / "raw-postgres.md",
+            Config.template_path.parent / "docs" / "raw-asyncpg-uml.png",
         ],
         "compose": Config.template_path / "to_compose" / "postgres.yaml",
         "dependencies": {
