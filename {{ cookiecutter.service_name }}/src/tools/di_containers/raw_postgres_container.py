@@ -27,9 +27,13 @@ class PsycopgSyncContainer(containers.DeclarativeContainer):
     connection_proxy = providers.Factory(
         connection_proxy.PsycopgConnectionProxy, connection_pool_factory, cursor_type
     )
+
+    # Добавить провайдеры конкретных реализаций репозиториев
     psycopg_repository = providers.Factory(
         psycopg_repository.PsycopgSyncRepository, connection_proxy
     )
+
+    # Добавить провайдеры конкретных реализаций UOW
     psycopg_uow = providers.Factory(psycopg_uow.PsycopgSyncUOW, psycopg_repository)
 
 
@@ -50,5 +54,9 @@ class AsyncpgContainer(containers.DeclarativeContainer):
     connection_proxy = providers.Factory(
         connection_proxy.AsyncpgConnectionProxy, connection_pool_factory, cursor_type
     )
+
+    # Добавить провайдеры конкретных реализаций репозиториев
     asyncpg_repository = providers.Factory(asyncpg_repository.AsyncpgRepository, connection_proxy)
+
+    # Добавить провайдеры конкретных реализаций UOW
     asyncpg_uow = providers.Factory(asyncpg_uow.AsyncpgUOW, asyncpg_repository)
