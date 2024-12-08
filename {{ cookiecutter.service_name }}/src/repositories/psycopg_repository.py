@@ -1,4 +1,5 @@
 # stdlib
+import abc
 from typing import Iterable
 
 # project
@@ -40,6 +41,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         return cursor
 
+    @abc.abstractmethod
     def create(self, query: str, params: list | None = None) -> None:
         """
         Добавить запись в таблицу
@@ -49,6 +51,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         self._execute_query(query, params)
 
+    @abc.abstractmethod
     def retrieve(self, query: str, params: list | None = None) -> tuple:
         """
         Получить запись из таблицы
@@ -59,6 +62,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         return self._execute_query(query, params).fetchone()
 
+    @abc.abstractmethod
     def update(self, query: str, params: list | None = None) -> None:
         """
         Обновить записи в таблице
@@ -68,6 +72,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
 
         self._execute_query(query, params)
 
+    @abc.abstractmethod
     def delete(self, query: str, params: list | None = None) -> None:
         """
         Удалить записи из таблицы

@@ -1,4 +1,5 @@
 # stdlib
+import abc
 import inspect
 from typing import Iterable
 
@@ -46,6 +47,7 @@ class AsyncpgRepository(base_repository.BaseRepository):
 
         return cursor
 
+    @abc.abstractmethod
     async def create(self, query: str, params: list | None = None) -> None:
         """
         Добавить запись в таблицу
@@ -55,6 +57,7 @@ class AsyncpgRepository(base_repository.BaseRepository):
 
         await self._execute_query(query, params)
 
+    @abc.abstractmethod
     async def retrieve(self, query: str, params: list | None = None) -> tuple:
         """
         Получить запись из таблицы
@@ -68,6 +71,7 @@ class AsyncpgRepository(base_repository.BaseRepository):
 
         return await cursor.fetchrow(query, *params)
 
+    @abc.abstractmethod
     async def update(self, query: str, params: list | None = None) -> None:
         """
         Обновить записи в таблице
@@ -77,6 +81,7 @@ class AsyncpgRepository(base_repository.BaseRepository):
 
         await self._execute_query(query, params)
 
+    @abc.abstractmethod
     async def delete(self, query: str, params: list | None = None) -> None:
         """
         Удалить записи из таблицы
