@@ -35,7 +35,7 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         if not isinstance(message, self._model_type):
             raise ValueError("Несоответствие типа сообщения; сообщение не отправлено")
 
-        connection = await self._connection_proxy.connect()
+        connection = await self._connection_proxy.connect(self)
 
         if self._channel is None:
             self._channel = await connection.channel()
@@ -51,4 +51,4 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         """
 
         await self._channel.close()
-        await self._connection_proxy.disconnect()
+        await self._connection_proxy.disconnect(self)

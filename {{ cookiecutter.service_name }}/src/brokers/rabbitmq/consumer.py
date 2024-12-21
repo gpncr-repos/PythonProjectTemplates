@@ -30,7 +30,7 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         :return: прочитанное сообщение
         """
 
-        connection = await self._connection_proxy.connect()
+        connection = await self._connection_proxy.connect(self)
 
         if self._channel is None:
             self._channel = await connection.channel()
@@ -57,4 +57,4 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
         """
 
         await self._channel.close()
-        await self._connection_proxy.disconnect()
+        await self._connection_proxy.disconnect(self)

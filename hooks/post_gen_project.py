@@ -236,6 +236,7 @@ class LibsConfig:
             Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
             Config.template_path / "config" / "rabbitmq_config.py",
             Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
+            Config.template_path / "interfaces" / "base_message_broker.py",
             Config.template_path / "tools" / "di_containers" / "rabbitmq_di_container.py",
             Config.template_path.parent / "docs" / "rabbitmq.md",
         ],
