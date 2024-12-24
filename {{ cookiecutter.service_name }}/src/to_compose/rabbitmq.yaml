@@ -2,7 +2,7 @@ version: '3'
 
 services:
   {{cookiecutter.service_name}}.rabbitmq:
-    image: #rabbitmq_image_path
+    image: rabbitmq:management
     hostname: {{cookiecutter.service_name}}.rabbitmq
     container_name: {{cookiecutter.service_name}}.rabbitmq
     ports:

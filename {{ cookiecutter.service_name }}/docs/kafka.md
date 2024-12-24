@@ -73,3 +73,15 @@ while True:
     message = await cons.retrieve()
     messages.append(message)
 ```
+
+## Переменные окружения для Docker-compose
+- ALLOW_PLAINTEXT_LISTENER - Разрешить соединение без шифрования (отключить в Проде)
+- KAFKA_CFG_NODE_ID - Идентификатор экземпляра брокера Kafka в кластере
+- KAFKA_CFG_CONTROLLER_QUORUM_VOTERS - Список идентификаторов брокеров, которые могут участвовать в выборах контроллера в кластере Kafka
+- KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP - Соответствие между слушателями и протоколами безопасности
+- KAFKA_CFG_CONTROLLER_LISTENER_NAMES - Какие слушатели будут использоваться контроллером в кластере
+- KAFKA_CFG_LOG_DIRS - Директория, где будут храниться лог-файлы данных (сообщений) для тем и партиций
+- KAFKA_CFG_PROCESS_ROLES - Роли, которые будет выполнять данный брокер в кластере
+- KAFKA_CFG_LISTENERS - Сетевые интерфейсы и порты, на которых брокер будет слушать входящие подключения
+- KAFKA_CFG_ADVERTISED_LISTENERS - Адреса и порты, по которым клиенты и другие брокеры могут получить доступ к данному брокеру 
+- KAFKA_KRAFT_CLUSTER_ID - Идентификатор кластера

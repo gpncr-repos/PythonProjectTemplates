@@ -21,7 +21,7 @@ class PostgresConfig(BaseSettings):
         alias="POSTGRES_HOST", description="Хост подключения к БД", default="localhost"
     )
     port: int = Field(alias="POSTGRES_PORT", default=5432, description="Порт подключения к БД")
-    db_name: str = Field(alias="POSTGRES_DB", description="Имя БД", default="calculator")
+    db_name: str = Field(alias="POSTGRES_DB", description="Имя БД", default="test")
     connection_pool_size: int = Field(alias="POOL_SIZE", description="Размер пула соединений")
 
     @property
