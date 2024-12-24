@@ -230,7 +230,7 @@ class LibsConfig:
     }
     rabbitmq = {
         "modules": [
-            Config.template_path / "brokers" / "rabbitmq" / "connections_proxy.py",
+            Config.template_path / "brokers" / "rabbitmq" / "connection_proxy.py",
             Config.template_path / "brokers" / "rabbitmq" / "consumer.py",
             Config.template_path / "brokers" / "rabbitmq" / "producer.py",
             Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
@@ -277,11 +277,17 @@ def resolve_libs() -> None:
         # TODO: Дополнять в процессе добавления библиотек
     }
 
+    modules_to_reserve = set()
+    modules_to_delete = set()
+
     for lib in libs_to_add:
         if not libs_to_add[lib]:
-            lib_paths = getattr(LibsConfig, lib)["modules"]
-            file_manager.paths_to_remove.extend(lib_paths)
+            for module in getattr(LibsConfig, lib)["modules"]:
+                modules_to_delete.add(module)
         else:
+            for module in getattr(LibsConfig, lib)["modules"]:
+                modules_to_reserve.add(module)
+
             compose_path = getattr(LibsConfig, lib).get("compose")
             if compose_path:
                 compose_merger.files_to_compose.add(compose_path)
@@ -292,6 +298,9 @@ def resolve_libs() -> None:
     compose_merger.save_merged_file(Config.template_path / "docker-compose.yaml")
 
     file_manager.paths_to_remove.append(Config.template_path / "to_compose")
+
+    for module in modules_to_delete - modules_to_reserve:
+        file_manager.paths_to_remove.append(module)
 
 
 def rename_env_example():
