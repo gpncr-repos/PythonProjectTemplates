@@ -4,9 +4,7 @@ import psycopg_pool
 
 # project
 from interfaces import base_postgres_cursor_proxy, base_proxy
-from tools.factories import asyncpg_connection_pool_factory
-
-from test_service.src.tools.factories import psycopg_connection_pool_factory
+from tools.factories import asyncpg_connection_pool_factory, psycopg_connection_pool_factory
 
 
 class PsycopgConnectionProxy(base_proxy.ConnectionProxy):

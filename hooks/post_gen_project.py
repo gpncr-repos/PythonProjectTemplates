@@ -198,6 +198,7 @@ class LibsConfig:
             "asyncpg": "^0.29.0",
             "psycopg": "^3.2.0",
             "psycopg-pool": "^3.2.0",
+            "psycopg-binary": "^3.2.3"
         },
     }
     redis = {
