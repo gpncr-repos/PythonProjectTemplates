@@ -50,5 +50,7 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
         Разорвать соединение с брокером
         """
 
-        await self._channel.close()
+        if self._channel:
+            await self._channel.close()
+
         await self._connection_proxy.disconnect(self)
