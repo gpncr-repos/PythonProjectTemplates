@@ -47,7 +47,7 @@ logger.info("Hi :)")
 На выходе в консоли будет отображено следующее сообщение:
 
 ```json
-{"asctime": "2024-11-01T20:35:55.325036", "http_referrer": "http://localhost:8080/api/v1/", "level": "INFO", "logger": {"name": "web.entrypoints.index_entrypoint", "level": "INFO"}, "message": "Hi :)", "msg": "Hi :)", "project_name": "test_project", "request": "GET", "request_body": null, "response_body": null, "response_status": null, "session_id": "super session", "status": null, "system_log_type": "application", "user_id": null}
+{"asctime": "2024-11-01T20:35:55.325036", "http_referrer": "http://localhost:8080/api/v1/", "level": "INFO", "logger": {"name": "api.entrypoints.index_entrypoint", "level": "INFO"}, "message": "Hi :)", "msg": "Hi :)", "project_name": "test_project", "request": "GET", "request_body": null, "response_body": null, "response_status": null, "session_id": "super session", "status": null, "system_log_type": "application", "user_id": null}
 ```
 
 Как видно из лога, единственное дополнительное поле, которое было заполнено пользователем и отлично от **null**, является поле **session_id**, значение которого равняется **super session**.

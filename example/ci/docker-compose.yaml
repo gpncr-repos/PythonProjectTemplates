@@ -1,0 +1,69 @@
+name: oil_rate_calculator
+services:
+  calculator.postgres:
+    image: postgres:latest
+    hostname: calculator.postgres
+    container_name: calculator.postgres
+    ports:
+    - ${POSTGRES_PORT}:5432
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+    env_file:
+    - ./.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d calculator" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  flyway:
+    image: flyway/flyway
+    environment:
+      FLYWAY_URL: jdbc:postgresql://calculator.postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./migrations:/flyway/sql
+    depends_on:
+      calculator.postgres:
+        condition: service_healthy
+    command: [ "migrate" ]
+  calculator:
+    build:
+      context: ../calculator/src
+      dockerfile: Dockerfile
+    ports:
+    - ${CALCULATOR_PORT}:8080
+    env_file:
+    - ../calculator/src/.env
+    depends_on:
+      - bff
+  bff:
+    build:
+      context: ../bff/src
+      dockerfile: Dockerfile
+    ports:
+      - ${BFF_PORT}:8080
+    env_file:
+      - ../bff/src/.env
+    depends_on:
+      calculator.rabbitmq:
+        condition: service_healthy
+  calculator.rabbitmq:
+    image: rabbitmq:management
+    hostname: calculator.rabbitmq
+    container_name: calculator.rabbitmq
+    ports:
+    - ${RABBITMQ_SERVER_PORT}:5672
+    - ${RABBITMQ_CLIENT_PORT}:15672
+    volumes:
+    - rabbitmq-data:/var/lib/rabbitmq
+    env_file:
+    - ./.env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  pgdata:
+  rabbitmq-data:

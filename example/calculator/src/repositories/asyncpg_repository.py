@@ -81,7 +81,7 @@ class AsyncpgRepository(base_repository.BaseRepository):
         raise NotImplementedError
 
     async def list(
-        self, query: str, rows_count: int, params: list | None = None
+        self, query: str, rows_count: int = None, params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить список записей из таблицы

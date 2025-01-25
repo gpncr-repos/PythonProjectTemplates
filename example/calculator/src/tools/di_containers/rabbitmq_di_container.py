@@ -1,4 +1,9 @@
-from brokers.rabbitmq import connection_proxy, consumer, producer
+from brokers.rabbitmq import (
+    connection_proxy,
+    consumer,
+    producer,
+    routing_configurator
+)
 from dependency_injector import containers, providers
 
 
@@ -27,4 +32,7 @@ class ConsumerContainer(containers.DeclarativeContainer):
     # указать свои типы соединений
     connection = providers.Singleton(connection_proxy.AsyncRMQConsumerConnectionProxy)
 
-    consumer = providers.Factory(consumer.RabbitMQConsumer, connection)
+    route_builder = providers.Factory(routing_configurator.RoutingBuilder)
+    route_configurator = providers.Factory(routing_configurator.RoutingConfigurator, route_builder)
+
+    consumer = providers.Factory(consumer.RabbitMQConsumer, connection, route_configurator)
