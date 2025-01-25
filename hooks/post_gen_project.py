@@ -217,11 +217,9 @@ class LibsConfig:
     }
     kafka = {
         "modules": [
+            Config.template_path / "brokers" / "kafka",
             Config.template_path / "config" / "kafka_config.py",
             Config.template_path / "interfaces" / "base_message_broker.py",
-            Config.template_path / "brokers" / "kafka" / "connection_proxy.py",
-            Config.template_path / "brokers" / "kafka" / "consumer.py",
-            Config.template_path / "brokers" / "kafka" / "producer.py",
             Config.template_path / "models" / "broker_message_dto.py",
             Config.template_path / "tools" / "di_containers" / "kafka_di_container.py",
             Config.template_path.parent / "docs" / "kafka.md",
@@ -231,10 +229,7 @@ class LibsConfig:
     }
     rabbitmq = {
         "modules": [
-            Config.template_path / "brokers" / "rabbitmq" / "connection_proxy.py",
-            Config.template_path / "brokers" / "rabbitmq" / "consumer.py",
-            Config.template_path / "brokers" / "rabbitmq" / "producer.py",
-            Config.template_path / "brokers" / "rabbitmq" / "routing_configurator.py",
+            Config.template_path / "brokers" / "rabbitmq",
             Config.template_path / "config" / "rabbitmq_config.py",
             Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
             Config.template_path / "interfaces" / "base_message_broker.py",
