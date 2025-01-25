@@ -49,9 +49,13 @@ class RoutingConfigurator(base_configurator.BaseRoutingConfigurator):
         )
         self.exchanges[exchange.name] = exchange
 
-        queue = await self._builder.declare_queue(channel, config.queue)
-        self.queues[queue.name] = queue
+        command_queue = await self._builder.declare_queue(channel, config.command_queue)
+        self.queues[command_queue.name] = command_queue
 
-        await self._builder.bind_queue_to_exchange(queue, exchange, config.routing_key)
+        event_queue = await self._builder.declare_queue(channel, config.event_queue)
+        self.queues[event_queue.name] = event_queue
+
+        await self._builder.bind_queue_to_exchange(command_queue, exchange, config.command_routing_key)
+        await self._builder.bind_queue_to_exchange(event_queue, exchange, config.event_routing_key)
 
         self._set_is_declared_to_true()

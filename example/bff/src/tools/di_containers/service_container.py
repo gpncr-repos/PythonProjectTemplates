@@ -1,10 +1,7 @@
 # thirdparty
 from dependency_injector import containers, providers
 
-# project
-from config import pg_config
-
-config = pg_config.pg_config
+from services import calculator_service
 
 
 class ServiceContainer(containers.DeclarativeContainer):
@@ -13,7 +10,7 @@ class ServiceContainer(containers.DeclarativeContainer):
     """
 
     # указать связанные модули
-    wiring_config = containers.WiringConfiguration(modules=None)
+    wiring_config = containers.WiringConfiguration(modules=["web.entrypoints.calc_oil_entrypoint"])
 
     # Добавить провайдеры конкретных реализаций сервисов
-    ...
+    calculator_service = providers.Factory(calculator_service.CalculatorService)

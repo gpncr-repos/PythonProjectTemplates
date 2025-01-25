@@ -13,7 +13,7 @@ class RedisSyncContainer(containers.DeclarativeContainer):
     DI-контейнер с синхронными провайдерами для работы с кэшем в бд Redis
     """
 
-    wiring_config = containers.WiringConfiguration(packages=["web.entrypoints"])
+    wiring_config = containers.WiringConfiguration(packages=["api.entrypoints"])
 
     redis_sync_conn = providers.Factory(redis_connection.RedisConnection, redis_config)
     redis_sync_repository = providers.Factory(redis_repository.SyncRedisRepository, redis_sync_conn)
@@ -25,7 +25,7 @@ class RedisAsyncContainer(containers.DeclarativeContainer):
     DI-контейнер с асинхронными провайдерами для работы с кэшем в бд Redis
     """
 
-    wiring_config = containers.WiringConfiguration(packages=["web.entrypoints"])
+    wiring_config = containers.WiringConfiguration(packages=["api.entrypoints"])
 
     redis_async_conn = providers.Factory(redis_connection.RedisAsyncConnection, redis_config)
     redis_async_repository = providers.Factory(redis_repository.AsyncRedisRepository, redis_async_conn)

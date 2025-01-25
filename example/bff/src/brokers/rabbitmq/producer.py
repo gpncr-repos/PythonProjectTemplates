@@ -1,6 +1,10 @@
 import aio_pika
 from config import rabbitmq_config
-from interfaces import base_message_broker, base_proxy
+from interfaces import (
+    base_message_broker,
+    base_proxy,
+    base_rabbitmq_routing_configurator as routing_configurator
+)
 from models.dto import broker_message_dto
 
 config = rabbitmq_config.config
@@ -10,15 +14,18 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
     def __init__(
         self,
         connection_proxy: base_proxy.ConnectionProxy,
+        routing_configurator_: routing_configurator.BaseRoutingConfigurator,
         model_type: type[broker_message_dto.BrokerMessageDTO] = broker_message_dto.BrokerMessageDTO,
     ) -> None:
         """
         Инициализировать переменные
         :param connection_proxy: прокси-объект соединения
+        :param routing_configurator_: конфигуратор маршрутизации сообщений
         :param model_type: тип сообщения
         """
 
         self._connection_proxy = connection_proxy
+        self._routing_configurator = routing_configurator_
         self._model_type = model_type
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
 
@@ -39,6 +46,8 @@ class RabbitMQProducer(base_message_broker.BaseProducer):
 
         if self._channel is None:
             self._channel = await connection.channel()
+
+        await self._routing_configurator.configure_routes(self._channel)
 
         message = aio_pika.Message(message.model_dump_json(by_alias=True).encode("utf-8"))
         exchange = await self._channel.get_exchange(exchange_name)

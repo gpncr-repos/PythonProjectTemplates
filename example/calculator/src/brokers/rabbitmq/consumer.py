@@ -3,20 +3,30 @@ import json
 
 import aio_pika
 from config import rabbitmq_config
-from interfaces import base_message_broker, base_proxy
+from interfaces import (
+    base_message_broker,
+    base_proxy,
+    base_rabbitmq_routing_configurator as routing_configurator
+)
 from models.dto import broker_message_dto
 
 config = rabbitmq_config.config
 
 
 class RabbitMQConsumer(base_message_broker.BaseConsumer):
-    def __init__(self, connection_proxy: base_proxy.ConnectionProxy) -> None:
+    def __init__(
+        self,
+        connection_proxy: base_proxy.ConnectionProxy,
+        routing_configurator_: routing_configurator.BaseRoutingConfigurator,
+    ) -> None:
         """
         Инициализировать переменные
         :param connection_proxy: прокси-объект соединения
+        :param routing_configurator_: конфигуратор маршрутизации сообщений
         """
 
         self._connection_proxy = connection_proxy
+        self._routing_configurator = routing_configurator_
         self._queue: asyncio.Queue[aio_pika.abc.AbstractIncomingMessage] = asyncio.Queue()
         self._channel: aio_pika.abc.AbstractRobustChannel | None = None
 
@@ -34,6 +44,8 @@ class RabbitMQConsumer(base_message_broker.BaseConsumer):
 
         if self._channel is None:
             self._channel = await connection.channel()
+
+        await self._routing_configurator.configure_routes(self._channel)
 
         await self._channel.set_qos(prefetch_count=prefetch_count)
 

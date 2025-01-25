@@ -18,7 +18,7 @@ class ClientAsyncpgCursorProxy(base_postgres_cursor_proxy.BaseAsyncpgCursorProxy
         self.cursor = connection
 
     async def retrieve_many(
-        self, sql_statement: str, rows_count: int, sql_params: list | None = None
+        self, sql_statement: str, rows_count: int | None = None, sql_params: list | None = None
     ) -> Iterable[tuple]:
         """
         Получить записи из БД

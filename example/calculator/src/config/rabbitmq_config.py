@@ -22,10 +22,18 @@ class RabbitMQConfig(BaseSettings):
     )
 
     # Добавить название очереди как поле класса
-    queue: str = Field(description="Название очереди", default="queue")
+    command_queue: str = Field(description="Очередь команд", default="commands")
+    event_queue: str = Field(description="Очередь событий", default="events")
 
     # Добавить название ключа маршрутизации как поле класса
-    routing_key: str = Field(description="Ключ маршрутизации", default="routing_key")
+    command_routing_key: str = Field(
+        description="Ключ маршрутизации для команд",
+        default="command_routing_key"
+    )
+    event_routing_key: str = Field(
+        description="Ключ маршрутизации для событий",
+        default="event_routing_key"
+    )
 
     @computed_field
     @property
