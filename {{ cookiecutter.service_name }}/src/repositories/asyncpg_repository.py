@@ -48,48 +48,37 @@ class AsyncpgRepository(base_repository.BaseRepository):
         return cursor
 
     @abc.abstractmethod
-    async def create(self, query: str, params: list | None = None) -> None:
+    async def create(self, *args, **kwargs) -> any:
         """
         Добавить запись в таблицу
-        :param query: запрос
-        :param params: список с параметрами запроса
         """
 
-        await self._execute_query(query, params)
+        raise NotImplementedError
 
     @abc.abstractmethod
-    async def retrieve(self, query: str, params: list | None = None) -> tuple:
+    async def retrieve(self, *args, **kwargs) -> any:
         """
         Получить запись из таблицы
-        :param query: запрос
-        :param params: список с параметрами
         :return: запись из БД
         """
 
-        connection = await self._get_connection()
-        cursor = connection.cursor
-
-        return await cursor.fetchrow(query, *params)
+        raise NotImplementedError
 
     @abc.abstractmethod
-    async def update(self, query: str, params: list | None = None) -> None:
+    async def update(self, *args, **kwargs) -> any:
         """
         Обновить записи в таблице
-        :param query: запрос
-        :param params: список с параметрами
         """
 
-        await self._execute_query(query, params)
+        raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete(self, query: str, params: list | None = None) -> None:
+    async def delete(self, *args, **kwargs) -> any:
         """
         Удалить записи из таблицы
-        :param query: запрос
-        :param params: список с параметрами
         """
 
-        await self._execute_query(query, params)
+        raise NotImplementedError
 
     async def list(
         self, query: str, rows_count: int, params: list | None = None

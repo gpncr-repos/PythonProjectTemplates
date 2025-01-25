@@ -42,45 +42,36 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         return cursor
 
     @abc.abstractmethod
-    def create(self, query: str, params: list | None = None) -> None:
+    def create(self, *args, **kwargs) -> any:
         """
         Добавить запись в таблицу
-        :param query: запрос
-        :param params: список с параметрами запроса
         """
 
-        self._execute_query(query, params)
+        pass
 
     @abc.abstractmethod
-    def retrieve(self, query: str, params: list | None = None) -> tuple:
+    def retrieve(self, *args, **kwargs) -> any:
         """
         Получить запись из таблицы
-        :param query: запрос
-        :param params: список с параметрами запроса
-        :return: запись из БД
         """
 
-        return self._execute_query(query, params).fetchone()
+        pass
 
     @abc.abstractmethod
-    def update(self, query: str, params: list | None = None) -> None:
+    def update(self, *args, **kwargs) -> any:
         """
         Обновить записи в таблице
-        :param query: запрос
-        :param params: список с параметрами запроса
         """
 
-        self._execute_query(query, params)
+        pass
 
     @abc.abstractmethod
-    def delete(self, query: str, params: list | None = None) -> None:
+    def delete(self, *args, **kwargs) -> any:
         """
         Удалить записи из таблицы
-        :param query: запрос
-        :param params: список с параметрами запроса
         """
 
-        self._execute_query(query, params)
+        pass
 
     def list(self, query: str, rows_count: int, params: list | None = None) -> Iterable[tuple]:
         """
@@ -92,4 +83,5 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         """
 
         connection = self._get_connection()
+
         return connection.retrieve_many(query, rows_count, params)
