@@ -10,7 +10,9 @@ class ProducerContainer(containers.DeclarativeContainer):
     # указать модули, с которыми будет связан di-контейнер
     wiring_config = containers.WiringConfiguration(modules=None)
 
-    connection = providers.Factory(connection_proxy.AsyncRMQProducerConnectionProxy)
+    # указать свои типы соединений
+    connection = providers.Singleton(connection_proxy.AsyncRMQProducerConnectionProxy)
+
     producer = providers.Factory(producer.RabbitMQProducer, connection)
 
 
@@ -22,5 +24,7 @@ class ConsumerContainer(containers.DeclarativeContainer):
     # указать модули, с которыми будет связан di-контейнер
     wiring_config = containers.WiringConfiguration(modules=None)
 
-    connection = providers.Factory(connection_proxy.AsyncRMQConsumerConnectionProxy)
+    # указать свои типы соединений
+    connection = providers.Singleton(connection_proxy.AsyncRMQConsumerConnectionProxy)
+
     consumer = providers.Factory(consumer.RabbitMQConsumer, connection)
