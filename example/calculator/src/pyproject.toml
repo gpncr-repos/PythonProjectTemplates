@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "calculator"
+version = "0.1.0"
+description = ""
+authors = ["gpn_team"]
+readme = "README.md"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.114.0"
+uvicorn = "^0.30.6"
+pydantic-settings = "^2.5.0"
+dependency-injector = "^4.41.0"
+pre-commit = "^4.0.1"
+python-json-logger = "^2.0.7"
+asyncpg = "^0.29.0"
+psycopg = "^3.2.0"
+psycopg-pool = "^3.2.0"
+psycopg-binary = "^3.2.3"
+aio-pika = "^9.4.3"
