@@ -1,19 +1,26 @@
-from typing import Callable
+import json.decoder
+import logging
+from typing import Callable, Iterable
 
 import httpx
 
+from interfaces import base_repository
 from models.dto import http_dto
-from interfaces import base_http_session_maker, base_repository
+from repositories import http_connection_proxy
+
+logger = logging.getLogger(__name__)
 
 
-class ErrorCatcherDecorator:
+class ResponseHandlerDecorator:
     """
-    Класс, реализующий метод-декоратор для отлавливания ошибок в репозитории
+    Класс, реализующий метод-декоратор для обработки HTTP-ответа
     """
 
-    def _catch_sync_exception(http_method: Callable) -> Callable:
+    def _handle_sync(
+        http_method: Callable[[http_dto.HTTPRequestDTO], httpx.Response]
+    ) -> Callable:
         """
-        Отловить ошибку при синхронном http-запросе
+        Обработать синхронный http-запрос
         :param http_method: метод репозитория
         :return: функция-обертка
         """
@@ -24,17 +31,32 @@ class ErrorCatcherDecorator:
             """
 
             try:
-                return http_method(self, *args, **kwargs)
+                response = http_method(self, *args, **kwargs)
             except httpx.HTTPError as http_error:
                 raise http_error
             except NotImplementedError as not_impl_error:
                 raise not_impl_error
+            except Exception as exception:
+                raise exception
+
+            try:
+                payload = response.json()
+            except json.decoder.JSONDecodeError as error:
+                logger.error(str(error))
+                payload = None
+
+            return http_dto.HTTPResponseDTO(
+                status=response.status_code,
+                payload=payload
+            )
 
         return execute_method
 
-    def _catch_async_exception(http_method: Callable) -> Callable:
+    def _handle_async(
+        http_method: Callable[[http_dto.HTTPRequestDTO], httpx.Response]
+    ) -> Callable:
         """
-        Отловить ошибку при асинхронном http-запросе
+        Обработать асинхронный http-запрос
         :param http_method: метод репозитория
         :return: функция-обертка
         """
@@ -45,16 +67,29 @@ class ErrorCatcherDecorator:
             """
 
             try:
-                return await http_method(self, *args, **kwargs)
+                response = await http_method(self, *args, **kwargs)
             except httpx.HTTPError as http_error:
                 raise http_error
             except NotImplementedError as not_impl_error:
                 raise not_impl_error
+            except Exception as exception:
+                raise exception
+
+            try:
+                payload = response.json()
+            except json.decoder.JSONDecodeError as error:
+                logger.error(str(error))
+                payload = None
+
+            return http_dto.HTTPResponseDTO(
+                status=response.status_code,
+                payload=payload
+            )
 
         return execute_method
 
-    catch_sync_exception = staticmethod(_catch_sync_exception)
-    catch_async_exception = staticmethod(_catch_async_exception)
+    handle_sync = staticmethod(_handle_sync)
+    handle_async = staticmethod(_handle_async)
 
 
 class SyncHTTPRepository(base_repository.BaseRepository):
@@ -62,88 +97,80 @@ class SyncHTTPRepository(base_repository.BaseRepository):
     Репозиторий для синхронных HTTP-запросов
     """
 
-    def __init__(self, http_client: base_http_session_maker.HTTPSyncSessionMaker) -> None:
+    def __init__(self, http_client: http_connection_proxy.HTTPSyncSession) -> None:
         """
         Инициализировать переменные
         :param http_client: HTTP-клиент
         """
 
-        self.client = http_client.get_client()
+        self.client = http_client.connect()
 
-    @ErrorCatcherDecorator.catch_sync_exception
-    def create(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_sync
+    def create(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать POST-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = self.client.post(
+        return self.client.post(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
             json=request_params.payload
         )
 
-        return http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
-        )
-
-    @ErrorCatcherDecorator.catch_sync_exception
-    def retrieve(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_sync
+    def retrieve(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать GET-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = self.client.get(
+        return self.client.get(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params
         )
 
-        return http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
-        )
 
-    @ErrorCatcherDecorator.catch_sync_exception
-    def list(self, *args, **kwargs) -> list[any]:
+    @ResponseHandlerDecorator.handle_sync
+    def list(self, *args, **kwargs) -> Iterable[any]:
         """
         Получить список записей
         """
 
         return super().list(*args, **kwargs)
 
-    @ErrorCatcherDecorator.catch_sync_exception
-    def update(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_sync
+    def update(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать PATCH-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = self.client.patch(
+        return self.client.patch(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
             json=request_params.payload
         )
 
-        return http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
+    @ResponseHandlerDecorator.handle_sync
+    def delete(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
+        """
+        Сделать DELETE-запрос
+        :param request_params: параметры запроса
+        :return: результаты запроса
+        """
+
+        return self.client.delete(
+            url=request_params.url,
+            headers=request_params.headers,
+            params=request_params.query_params
         )
-
-    @ErrorCatcherDecorator.catch_sync_exception
-    def delete(self, *args, **kwargs) -> any:
-        """
-        Удалить запись
-        """
-
-        return super().delete(*args, **kwargs)
 
 
 class AsyncHTTPRepository(base_repository.BaseRepository):
@@ -151,85 +178,76 @@ class AsyncHTTPRepository(base_repository.BaseRepository):
     Репозиторий для асинхронных HTTP-запросов
     """
 
-    def __init__(self, http_client: base_http_session_maker.HTTPAsyncSessionMaker) -> None:
+    def __init__(self, http_client: http_connection_proxy.HTTPAsyncSession) -> None:
         """
         Инициализировать переменные
         :param http_client: HTTP-клиент
         """
 
-        self.client = http_client.get_client()
+        self.client = http_client.connect()
 
-    @ErrorCatcherDecorator.catch_async_exception
-    async def create(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_async
+    async def create(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать POST-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = await self.client.post(
+        return await self.client.post(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
             json=request_params.payload
         )
 
-        return await http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
-        )
-
-    @ErrorCatcherDecorator.catch_async_exception
-    async def retrieve(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_async
+    async def retrieve(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать GET-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = await self.client.get(
+        return await self.client.get(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params
         )
 
-        return http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
-        )
-
-    @ErrorCatcherDecorator.catch_async_exception
-    async def list(self, *args, **kwargs) -> list[any]:
+    @ResponseHandlerDecorator.handle_async
+    async def list(self, *args, **kwargs) -> Iterable[any]:
         """
         Получить список записей
         """
 
         return super().list(*args, **kwargs)
 
-    @ErrorCatcherDecorator.catch_async_exception
-    async def update(self, request_params: http_dto.HTTPRequestDTO) -> http_dto.HTTPResponseDTO:
+    @ResponseHandlerDecorator.handle_async
+    async def update(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
         """
         Сделать PATCH-запрос
         :param request_params: параметры запроса
         :return: результаты запроса
         """
 
-        result = await self.client.patch(
+        return await self.client.patch(
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
             json=request_params.payload
         )
 
-        return http_dto.HTTPResponseDTO(
-            status=result.status_code,
-            payload=result.json()
+    @ResponseHandlerDecorator.handle_async
+    async def delete(self, request_params: http_dto.HTTPRequestDTO) -> httpx.Response:
+        """
+        Сделать DELETE-запрос
+        :param request_params: параметры запроса
+        :return: результаты запроса
+        """
+
+        return await self.client.delete(
+            url=request_params.url,
+            headers=request_params.headers,
+            params=request_params.query_params
         )
-
-    @ErrorCatcherDecorator.catch_async_exception
-    async def delete(self, *args, **kwargs) -> any:
-        """
-        Удалить запись
-        """
-
-        return super().delete(*args, **kwargs)

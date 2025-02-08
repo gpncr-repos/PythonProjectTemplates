@@ -238,11 +238,24 @@ class LibsConfig:
             Config.template_path / "config" / "rabbitmq_config.py",
             Config.template_path / "interfaces" / "base_rabbitmq_routing_configurator.py",
             Config.template_path / "interfaces" / "base_message_broker.py",
+            Config.template_path / "models" / "broker_message_dto.py",
             Config.template_path / "tools" / "di_containers" / "rabbitmq_di_container.py",
             Config.template_path.parent / "docs" / "rabbitmq.md",
         ],
         "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
         "dependencies": {"aio-pika": "^9.4.3"},
+    }
+    httpx = {
+        "modules": [
+            Config.template_path / "models" / "dto" / "http_dto.py",
+            Config.template_path / "repositories" / "http_connection_proxy.py",
+            Config.template_path / "repositories" / "http_repository.py",
+            Config.template_path / "tools" / "di_containers" / "http_integration_di_container.py",
+            Config.template_path / "uows" / "http_uow.py",
+            Config.template_path.parent / "docs" / "rabbitmq.md",
+        ],
+        "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
+        "dependencies": {"httpx": "^0.27.2"},
     }
     # TODO: Дополнять в процессе добавления библиотек
 
@@ -275,6 +288,7 @@ def resolve_libs() -> None:
         "redis": "{{cookiecutter.add_redis}}" == "True",
         "kafka": "{{cookiecutter.add_kafka}}" == "True",
         "rabbitmq": "{{cookiecutter.add_rabbitmq}}" == "True",
+        "httpx": "{{cookiecutter.add_httpx}}" == "True",
         # TODO: Дополнять в процессе добавления библиотек
     }
 
