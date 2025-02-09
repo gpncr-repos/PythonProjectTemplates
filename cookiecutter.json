@@ -10,5 +10,6 @@
   "add_raw_postgres": false,
   "add_redis": false,
   "add_kafka": false,
-  "add_rabbitmq": false
+  "add_rabbitmq": false,
+  "add_httpx": false
 }
