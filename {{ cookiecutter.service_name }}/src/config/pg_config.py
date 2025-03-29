@@ -35,12 +35,28 @@ class PostgresConfig(BaseSettings):
     @property
     def postgres_dsn(self) -> PostgresDsn:
         """
-        Получение url для подключения к Postgres
+        Получение url для подключения к Postgres синхронно
         :return: dsn
         """
 
         return PostgresDsn.build(
             scheme="postgresql",
+            username=self.user,
+            password=self.password,
+            host=self.host,
+            port=self.port,
+            path=self.db_name,
+        )
+
+    @property
+    def postgres_async_dsn(self) -> PostgresDsn:
+        """
+        Получение url для подключения к Postgres асинхронно
+        :return: dsn
+        """
+
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
             username=self.user,
             password=self.password,
             host=self.host,
