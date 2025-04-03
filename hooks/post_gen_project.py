@@ -167,7 +167,12 @@ class LibsConfig:
     sqlalchemy = {
         "modules": [
             Config.template_path / "config" / "pg_config.py",
+            Config.template_path / "interfaces" / "base_alchemy_model.py",
+            Config.template_path / "repositories" / "base_alchemy_repository.py",
             Config.template_path / "storage" / "sqlalchemy",
+            Config.template_path / "tools" / "di_containers" / "alchemy_container.py",
+            Config.template_path / "tools" / "factories" / "alchemy_engine_factory.py",
+            Config.template_path / "uows" / "alchemy_uow.py",
             Config.template_path.parent / "docs" / "postgres-sqlalchemy.md",
         ],
         "compose": Config.template_path / "to_compose" / "postgres.yaml",

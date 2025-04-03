@@ -2,19 +2,11 @@ from __future__ import annotations  # no qa
 
 import abc
 
-from interfaces import base_repository
-
 
 class BaseSyncUOW(abc.ABC):
     """
     Абстрактный класс синхронного UOW
     """
-
-    def __init__(self, *args, **kwargs) -> None:
-        """
-        Инициализировать переменные
-        """
-        ...
 
     def __enter__(self, *args, **kwargs) -> BaseSyncUOW:
         """
