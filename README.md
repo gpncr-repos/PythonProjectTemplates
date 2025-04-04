@@ -28,6 +28,7 @@
 - Асинхронная Kafka
 - Асинхронный RabbitMQ
 - Работа с Postgres через raw sql
+- Интеграция по http
 
 ## RoadMap
 
