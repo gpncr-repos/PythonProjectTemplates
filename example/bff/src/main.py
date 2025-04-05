@@ -1,11 +1,15 @@
 import fastapi
 import uvicorn
 from config import app_config, uvicorn_config
+from tools.di_containers import rabbitmq_di_container, service_container
 from tools.di_containers.app_container import ApplicationContainer
 from web.middlewares import logger_middleware
 from web.tools import router_registrator
 
 app_config = app_config.app_config
+
+producer_container = rabbitmq_di_container.ProducerContainer()
+services_container = service_container.ServiceContainer()
 
 
 def create_app() -> fastapi.FastAPI:

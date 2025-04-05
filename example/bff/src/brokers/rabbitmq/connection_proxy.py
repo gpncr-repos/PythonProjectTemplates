@@ -81,7 +81,15 @@ class AsyncRMQProducerConnectionProxy(InstanceConnectionBase):
     Класс прокси-подключения для продюсера с реализацией aio_pika
     """
 
-    pass
+    async def disconnect(
+        self, user: base_message_broker.BaseConsumer | base_message_broker.BaseProducer
+    ) -> None:
+        """
+        Отключиться от брокера
+        :param user: пользователь соединения
+        """
+
+        pass
 
 
 class AsyncRMQConsumerConnectionProxy(InstanceConnectionBase):
