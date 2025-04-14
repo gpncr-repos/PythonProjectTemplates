@@ -1,6 +1,8 @@
 import fastapi
 
 from config import app_config
+from web.middlewares import logger_middleware
+from web.tools import router_registrator
 
 app_config = app_config.app_config
 
@@ -18,3 +20,9 @@ def initiliaze_app() -> fastapi.FastAPI:
     )
 
     return fastapi_app
+
+app = initiliaze_app()
+router_registrator.register_routers(app)
+
+app.add_middleware(logger_middleware.LogRequestInfoMiddleware)
+app.add_middleware(logger_middleware.SetRequestContextMiddleware)
