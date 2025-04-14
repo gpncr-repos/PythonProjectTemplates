@@ -9,7 +9,7 @@ class HTTPSyncIntegrationContainer(containers.DeclarativeContainer):
     DI-контейнер с синхронными провайдерами HTTP-интеграции
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     http_sync_session = providers.Factory(http_connection_proxy.HTTPSyncSession)
     http_sync_repository = providers.Factory(
@@ -25,7 +25,7 @@ class HTTPAsyncIntegrationContainer(containers.DeclarativeContainer):
     DI-контейнер с асинхронными провайдерами HTTP-интеграции
     """
 
-    wiring_config = containers.WiringConfiguration(modules=...)
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     http_async_session = providers.Factory(http_connection_proxy.HTTPAsyncSession)
     http_async_repository = providers.Factory(

@@ -28,7 +28,7 @@ class SyncHTTPUOW(base_uow.BaseSyncUOW):
         Закрыть сессию
         """
 
-        self.repository.client.disconnect()
+        self.repository.client.close()
 
 
 class AsyncHTTPUOW(base_uow.BaseAsyncUOW):
@@ -57,4 +57,4 @@ class AsyncHTTPUOW(base_uow.BaseAsyncUOW):
         Закрыть сессию
         """
 
-        await self.repository.client.disconnect()
+        await self.repository.client.aclose()

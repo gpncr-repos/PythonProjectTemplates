@@ -47,6 +47,7 @@ class ResponseHandlerDecorator:
 
             return http_dto.HTTPResponseDTO(
                 status=response.status_code,
+                headers=dict(response.headers),
                 payload=payload
             )
 
@@ -83,6 +84,7 @@ class ResponseHandlerDecorator:
 
             return http_dto.HTTPResponseDTO(
                 status=response.status_code,
+                headers=dict(response.headers),
                 payload=payload
             )
 
@@ -117,7 +119,8 @@ class SyncHTTPRepository(base_repository.BaseRepository):
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
-            json=request_params.payload
+            json=request_params.payload,
+            data=request_params.form_data,
         )
 
     @ResponseHandlerDecorator.handle_sync
@@ -155,7 +158,8 @@ class SyncHTTPRepository(base_repository.BaseRepository):
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
-            json=request_params.payload
+            json=request_params.payload,
+            data=request_params.form_data,
         )
 
     @ResponseHandlerDecorator.handle_sync
@@ -198,7 +202,8 @@ class AsyncHTTPRepository(base_repository.BaseRepository):
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
-            json=request_params.payload
+            json=request_params.payload,
+            data=request_params.form_data,
         )
 
     @ResponseHandlerDecorator.handle_async
@@ -235,7 +240,8 @@ class AsyncHTTPRepository(base_repository.BaseRepository):
             url=request_params.url,
             headers=request_params.headers,
             params=request_params.query_params,
-            json=request_params.payload
+            json=request_params.payload,
+            data=request_params.form_data,
         )
 
     @ResponseHandlerDecorator.handle_async
