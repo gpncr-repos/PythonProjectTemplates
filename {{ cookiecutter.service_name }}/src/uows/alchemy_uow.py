@@ -1,4 +1,4 @@
-from __future__ import annotations  # no qa
+from __future__ import annotations  # noqa
 
 from sqlalchemy.ext.asyncio import AsyncSessionTransaction
 from sqlalchemy.orm import SessionTransaction

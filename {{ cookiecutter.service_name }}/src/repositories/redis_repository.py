@@ -70,6 +70,7 @@ class SyncRedisRepository(BaseRepository):
         Инициализировать переменные
         :param connection: синхронное соедидинение Redis
         """
+
         self.connection = connection.get_connection()
 
     @RedisErrorCatcherDecorator.catch_sync_exception
@@ -92,7 +93,9 @@ class SyncRedisRepository(BaseRepository):
         Получить запись из бд по ключу
         :param key: имя записи
         """
+
         value = self.connection.get(key)
+
         return value
 
     @RedisErrorCatcherDecorator.catch_sync_exception
@@ -110,6 +113,7 @@ class SyncRedisRepository(BaseRepository):
         :param key: имя записи
         :param new_value: новое значение для записи
         """
+
         self.connection.set(key, new_value)
 
     @RedisErrorCatcherDecorator.catch_sync_exception
@@ -118,6 +122,7 @@ class SyncRedisRepository(BaseRepository):
         Удалить запись из бд
         :param key: имя записи
         """
+
         self.connection.delete(key)
 
 
@@ -141,6 +146,7 @@ class AsyncRedisRepository(BaseRepository):
         :param value: значение записи
         :param ttl: время жизни записи
         """
+
         if ttl:
             await self.connection.set(key, value, ex=ttl)
         else:
@@ -152,6 +158,7 @@ class AsyncRedisRepository(BaseRepository):
         Получить запись из бд по ключу
         :param key: имя записи
         """
+
         value = await self.connection.get(key)
         return value
 
@@ -170,6 +177,7 @@ class AsyncRedisRepository(BaseRepository):
         :param key: имя записи
         :param new_value: новое значение для записи
         """
+
         await self.connection.set(key, new_value)
 
     @RedisErrorCatcherDecorator.catch_async_exception
@@ -178,4 +186,5 @@ class AsyncRedisRepository(BaseRepository):
         Удалить запись из бд
         :param key: имя записи
         """
+
         await self.connection.delete(key)

@@ -14,8 +14,8 @@ class AlchemySyncContainer(containers.DeclarativeContainer):
     DI-контейнер с провайдерами для работы с БД Postgres через синхронную сессию Алхимии
     """
 
-    # указать связанные модули
-    wiring_config = containers.WiringConfiguration(modules=[])
+    # Указать связанные модули
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     engine_factory = providers.Singleton(
         alchemy_engine_factory.AlchemySyncEngineFactory,
@@ -40,8 +40,8 @@ class AlchemyAsyncContainer(containers.DeclarativeContainer):
     DI-контейнер с провайдерами для работы с БД Postgres через асинхронную сессию Алхимии
     """
 
-    # указать связанные модули
-    wiring_config = containers.WiringConfiguration(modules=[])
+    # Указать связанные модули
+    wiring_config = containers.WiringConfiguration(modules=None)
 
     engine_factory = providers.Singleton(
         alchemy_engine_factory.AlchemyAsyncEngineFactory,

@@ -1,4 +1,4 @@
-from __future__ import annotations  # no qa
+from __future__ import annotations  # noqa
 
 import asyncpg.transaction
 

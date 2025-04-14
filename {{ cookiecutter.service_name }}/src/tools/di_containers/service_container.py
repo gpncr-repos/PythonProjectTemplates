@@ -12,7 +12,7 @@ class ServiceContainer(containers.DeclarativeContainer):
     DI-контейнер с провайдерами для работы с сервисами
     """
 
-    # указать связанные модули
+    # Указать связанные модули
     wiring_config = containers.WiringConfiguration(modules=None)
 
     # Добавить провайдеры конкретных реализаций сервисов

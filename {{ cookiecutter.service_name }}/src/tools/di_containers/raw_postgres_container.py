@@ -15,7 +15,7 @@ class PsycopgSyncContainer(containers.DeclarativeContainer):
     DI-контейнер с провайдерами для работы с БД Postgres через psycopg
     """
 
-    # указать связанные модули
+    # Указать связанные модули
     wiring_config = containers.WiringConfiguration(modules=None)
 
     connection_pool_factory = providers.Singleton(
@@ -42,7 +42,7 @@ class AsyncpgContainer(containers.DeclarativeContainer):
     DI-контейнер с провайдерами для работы с БД Postgres через asyncpg
     """
 
-    # указать связанные модули
+    # Указать связанные модули
     wiring_config = containers.WiringConfiguration(modules=None)
 
     connection_pool_factory = providers.Singleton(

@@ -22,32 +22,32 @@ class BaseAlchemyRepository(base_repository.BaseRepository):
         Создать запись
         """
 
-        return super().create()
+        return super().create(*args, **kwargs)
 
     def retrieve(self, *args, **kwargs) -> any:
         """
         Получить запись
         """
 
-        return super().create()
+        return super().retrieve(*args, **kwargs)
 
     def list(self, *args, **kwargs) -> Iterable[any]:
         """
         Получить список записей
         """
 
-        return super().create()
+        return super().list(*args, **kwargs)
 
     def update(self, *args, **kwargs) -> any:
         """
         Обновить запись
         """
 
-        return super().create()
+        return super().update(*args, **kwargs)
 
     def delete(self, *args, **kwargs) -> any:
         """
         Удалить запись
         """
 
-        return super().create()
+        return super().delete(*args, **kwargs)

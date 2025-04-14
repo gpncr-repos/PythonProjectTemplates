@@ -1,4 +1,4 @@
-from __future__ import annotations  # no qa
+from __future__ import annotations  # noqa
 
 # project
 from interfaces import base_postgres_cursor_proxy, base_uow

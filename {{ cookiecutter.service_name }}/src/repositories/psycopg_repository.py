@@ -47,7 +47,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         Добавить запись в таблицу
         """
 
-        pass
+        return super().create(*args, **kwargs)
 
     @abc.abstractmethod
     def retrieve(self, *args, **kwargs) -> any:
@@ -55,7 +55,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         Получить запись из таблицы
         """
 
-        pass
+        return super().retrieve(*args, **kwargs)
 
     @abc.abstractmethod
     def update(self, *args, **kwargs) -> any:
@@ -63,7 +63,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         Обновить записи в таблице
         """
 
-        pass
+        return super().update(*args, **kwargs)
 
     @abc.abstractmethod
     def delete(self, *args, **kwargs) -> any:
@@ -71,7 +71,7 @@ class PsycopgSyncRepository(base_repository.BaseRepository):
         Удалить записи из таблицы
         """
 
-        pass
+        return super().delete(*args, **kwargs)
 
     def list(self, query: str, rows_count: int, params: list | None = None) -> Iterable[tuple]:
         """
