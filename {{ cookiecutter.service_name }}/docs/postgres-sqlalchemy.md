@@ -25,6 +25,28 @@
 Предлагается реализация репозитория, совместимого как с синхронными, так и с асинхронными подходами, который реализует интерфейс **BaseRepository** из **interfaces/base_repository.py**.
 Базовый класс репозитория находится в директории **repositories/base_alchemy_repository.py**.
 
+Нашей рекомендацией является использование репозитория вместе с **UOW**, т.к. в таком случае **UOW** полностью контролирует время жизни транзакций.  Однако, если вы решили использовать репозиторий отдельно, то минимальное требование к его правильной работе - наличие прокси-объекта соединения, которое прокидывается в инициализатор репозитория.
+
+После инициализации объекта репозитория при каждом запросе в БД требуется получать объект сессии из прокси-объекта соединения. В данной реализации объект сессии будет всегда одним и тем же.
+
+```python
+from repositories import base_alchemy_repository
+
+class TestRepository(base_alchemy_repository.BaseAlchemyRepository):
+    # Остальной код
+
+    def create(self, *args, **kwargs) -> None:
+        session = self.connection_proxy.connect()
+        
+        # Инициализируем объект ORM
+        db_model = ...
+
+        session.add(db_model)
+        session.commit()
+    
+    # Остальной код
+```
+
 ## Unit of Work (UOW)
 
 Для обеспечения транзакционности работы с базой данных PostgreSQL были написаны два класса Unit of Work (UOW) для синхронной и асинхронной реализаций.
@@ -39,6 +61,7 @@
 Пример создания объектов в DI-контейнере:
 
 ```python
+class AlchemySyncContainer(containers.DeclarativeContainer):
     # указать связанные модули
     wiring_config = containers.WiringConfiguration(modules=[])
 
@@ -70,7 +93,7 @@
 
 
 ```python
-# some code
+# Остальной код
 
 @inject
 def psycopg_example(
@@ -80,7 +103,7 @@ def psycopg_example(
         u.repository.create(...)
         u.commit()
 
-# some code
+# Остальной код
 
 container = AlchemySyncContainer()
 engine = container.engine_factory().create()
