@@ -2,7 +2,7 @@ version: '3'
 
 services:
   {{cookiecutter.service_name}}.redis:
-    image: redis:latest
+    image: valkey/valkey:latest
     hostname: {{cookiecutter.service_name}}.redis
     container_name: {{cookiecutter.service_name}}.redis
     command: /bin/sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
