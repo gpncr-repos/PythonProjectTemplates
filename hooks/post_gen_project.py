@@ -254,9 +254,8 @@ class LibsConfig:
             Config.template_path / "repositories" / "http_repository.py",
             Config.template_path / "tools" / "di_containers" / "http_integration_di_container.py",
             Config.template_path / "uows" / "http_uow.py",
-            Config.template_path.parent / "docs" / "rabbitmq.md",
+            Config.template_path.parent / "docs" / "httpx.md",
         ],
-        "compose": Config.template_path / "to_compose" / "rabbitmq.yaml",
         "dependencies": {"httpx": "^0.27.2"},
     }
     # TODO: Дополнять в процессе добавления библиотек
