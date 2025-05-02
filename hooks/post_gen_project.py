@@ -50,6 +50,8 @@ class DependenciesCreator:
                 dependency-injector = "^4.41.0"
                 pre-commit = "^4.0.1"
                 python-json-logger = "^2.0.7"
+                pytest = "^8.3.5"
+                pytest-asyncio = "^0.26.0"
             """
         )
 
